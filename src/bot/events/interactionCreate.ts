@@ -45,7 +45,7 @@ export default async (guardsman: Guardsman, interaction: Interaction<"cached">) 
             })
         }
 
-        if (command.developer && interaction.member.id != "250805980491808768")
+        if (command.developer && interaction.member.id != "1071373709157351464")
         {
             return interaction.reply({
                 embeds: [
