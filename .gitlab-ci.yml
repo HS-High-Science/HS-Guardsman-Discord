@@ -12,3 +12,6 @@ compile:
   artifacts:
     paths:
       - node_modules
+  only:
+    - master
+    - merge_requests
