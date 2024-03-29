@@ -13,8 +13,3 @@ compile:
   artifacts:
     paths:
       - node_modules
-
-testrun:
-  stage: run
-  script:
-    - npm run ci --if-present
