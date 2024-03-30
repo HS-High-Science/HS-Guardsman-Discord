@@ -225,6 +225,10 @@ export default class UpdateCommand implements ICommand
                     .setFooter({ text: "Guardsman Verification" })
                     .addFields(
                         {
+                          name: "Username",
+                          value: `${existingUserData.username}`,
+                        },
+                        {
                             name: "Added Roles",
                             value: `${allowedRoles.length > 0 && "• " || "None."}${allowedRoles.map(r => "<@&" + r.role_id + '>').join("\n • ")}`
                         },
