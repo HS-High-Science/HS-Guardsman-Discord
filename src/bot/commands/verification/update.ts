@@ -225,7 +225,7 @@ export default class UpdateCommand implements ICommand
                     .setFooter({ text: "Guardsman Verification" })
                     .addFields(
                         {
-                          name: "Username",
+                          name: "Username changed to",
                           value: `${existingUserData.username}`,
                         },
                         {
