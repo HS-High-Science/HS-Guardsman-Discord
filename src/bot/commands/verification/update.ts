@@ -213,6 +213,8 @@ export default class UpdateCommand implements ICommand
             }
         }
 
+        await member.setNickname(existingUserData.username);
+
         await interaction.reply({
             embeds: [
                 new EmbedBuilder()
