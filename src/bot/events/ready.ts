@@ -38,10 +38,10 @@ export default async (guardsman: Guardsman) =>
     {}
 
     guardsman.bot.user?.setPresence({
-        status: "online",
+        status: "dnd",
         activities: [
             {
-                name: `in the tunnels`,
+                name: `with your emotions.`,
                 type: ActivityType.Playing,
             }
         ]
