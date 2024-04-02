@@ -4,7 +4,7 @@ import { ChatInputCommandInteraction } from "discord.js";
 export default class ReloadCommand implements ICommand
 {
     name: Lowercase<string> = "cross";
-    description: string = "Allows Guardsman moderators to cross ban a user from ALL Guardsman-controlled servers.";
+    description: string = "Allows Guardsman moderators to cross ban/unban a user from ALL Guardsman-controlled servers.";
     guardsman: Guardsman;
 
     constructor(guardsman: Guardsman)

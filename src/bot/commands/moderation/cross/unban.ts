@@ -4,7 +4,7 @@ import { Guardsman } from "index";
 
 export default class CrossUnbanSubcommand implements ICommand
 {
-    name: Lowercase<string> = "cban";
+    name: Lowercase<string> = "unban";
     description: string = "Allows Guardsman moderators to unban a user from ALL Guardsman-controlled servers.";
     guardsman: Guardsman;
 
