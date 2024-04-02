@@ -11,7 +11,7 @@ import { Guardsman } from "index";
 
 export default class BanCommand implements ICommand
 {
-    name: Lowercase<string> = "ban";
+    name: Lowercase<string> = "unban";
     description: string = "Allows Guild moderators to ban a user from this guild.";
     guardsman: Guardsman;
     defaultMemberPermissions?: string | number | bigint | null | undefined = PermissionFlagsBits.BanMembers;
