@@ -77,7 +77,7 @@ export default class KickCommand implements ICommand
                 embeds: [
                     new EmbedBuilder()
                         .setTitle("Guardsman Moderation")
-                        .setDescription(`Failed to send ban DM. ${error}`)
+                        .setDescription(`Failed to send kick DM. ${error}`)
                         .setColor(Colors.Orange)
                         .setFooter({ text: "Guardsman API" })
                         .setTimestamp()
@@ -87,9 +87,7 @@ export default class KickCommand implements ICommand
 
         try 
         {
-            await interaction.guild.bans.create(member.id, {
-                reason: (kickReason || `No reason provided.`) + `; Executed by: ${interaction.member.user.username}`
-            });
+            await member.kick((kickReason || `No reason provided.`) + `; Executed by: ${interaction.member.user.username}`)
         } 
         catch (error) 
         {
@@ -97,7 +95,7 @@ export default class KickCommand implements ICommand
                 embeds: [
                     new EmbedBuilder()
                         .setTitle("Guardsman Moderation")
-                        .setDescription(`Failed to ban <@${member.id}>. ${error}`)
+                        .setDescription(`Failed to kick <@${member.id}>. ${error}`)
                         .setColor(Colors.Red)
                         .setFooter({ text: "Guardsman Moderation" })
                         .setTimestamp()
@@ -111,7 +109,7 @@ export default class KickCommand implements ICommand
             embeds: [
                 new EmbedBuilder()
                         .setTitle("Guardsman Moderation")
-                        .setDescription(`${member.user.username} has been banned from the guild.`)
+                        .setDescription(`${member.user.username} has been kicked from the guild.`)
                         .setColor(Colors.Red)
                         .setFooter({ text: "Guardsman Moderation"})
                         .setTimestamp()

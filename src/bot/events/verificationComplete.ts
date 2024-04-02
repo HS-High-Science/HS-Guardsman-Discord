@@ -24,7 +24,7 @@ export default async (guardsman: Guardsman, discordId: string) =>
             ],
         });
     
-        await reply.reply(`<@${interaction.member.id}>`)
+        //await reply.reply(`<@${interaction.member.id}>`) // Errors.
     } 
     catch (error) 
     {

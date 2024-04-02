@@ -45,7 +45,7 @@ export default async (guardsman: Guardsman, interaction: Interaction<"cached">) 
             })
         }
 
-        if (command.developer && interaction.member.id != "1071373709157351464")
+        if (command.developer && !guardsman.environment.DISCORD_BOT_OWNER_IDS.includes(interaction.user.id))
         {
             return interaction.reply({
                 embeds: [

@@ -48,7 +48,7 @@ class GuardsmanObject {
             this.ci = true;
             this.environment.DISCORD_TOKEN = "NO_LOGIN"
             this.environment.DISCORD_CLIENT_ID = "NO_LOGIN"
-            this.environment.DB_CONNECTION = "mysql";
+            this.environment.DB_CONNECTION = "mysql2";
             this.environment.DB_HOST = "127.0.0.1"
             this.environment.DB_PORT = "3306"
             this.environment.DB_DATABASE = "GDE_CI"
