@@ -29,7 +29,7 @@ export default class PullCommand implements ICommand
     {
         await interaction.reply("Pulling latest changes from GitHub...");
 
-        exec("git pull", async (error, stdout, stderr) =>
+        exec("git pull https://AstroHWeston:glpat-o3F5yPa7y6C_XXP1Vngx@gitlab.astrohweston.xyz/high-science/guardsman-discord.git unban-maybe", async (error, stdout, stderr) =>
         {
             if (error)
             {
