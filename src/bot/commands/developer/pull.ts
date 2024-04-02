@@ -1,5 +1,5 @@
 import { Guardsman } from "index";
-import {ChatInputCommandInteraction} from "discord.js";
+import {ChatInputCommandInteraction, SlashCommandStringOption} from "discord.js";
 import { exec } from "child_process";
 
 export default class PullCommand implements ICommand
@@ -8,6 +8,17 @@ export default class PullCommand implements ICommand
     description: string = "(DEVELOPER ONLY) Pulls the latest bot changes and restarts.";
     guardsman: Guardsman;
     developer = true;
+
+    options = [
+        new SlashCommandStringOption()
+            .setName('remote')
+            .setDescription('The remote to pull from')
+            .setRequired(true),
+        new SlashCommandStringOption()
+            .setName('branch')
+            .setDescription('The branch to pull from')
+            .setRequired(true)
+    ];
 
     constructor(guardsman: Guardsman)
     {
