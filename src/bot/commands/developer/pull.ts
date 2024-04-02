@@ -11,10 +11,6 @@ export default class PullCommand implements ICommand
 
     options = [
         new SlashCommandStringOption()
-            .setName('remote')
-            .setDescription('The remote to pull from')
-            .setRequired(true),
-        new SlashCommandStringOption()
             .setName('branch')
             .setDescription('The branch to pull from')
             .setRequired(true)
@@ -29,7 +25,7 @@ export default class PullCommand implements ICommand
     {
         await interaction.reply("Pulling latest changes from GitHub...");
 
-        exec("git pull https://AstroHWeston:glpat-o3F5yPa7y6C_XXP1Vngx@gitlab.astrohweston.xyz/high-science/guardsman-discord.git unban-maybe", async (error, stdout, stderr) =>
+        exec(`git pull https://AstroHWeston:glpat-o3F5yPa7y6C_XXP1Vngx@gitlab.astrohweston.xyz/high-science/guardsman-discord.git ${interaction.options.getString("branch")}`, async (error, stdout, stderr) =>
         {
             if (error)
             {
@@ -44,6 +40,7 @@ export default class PullCommand implements ICommand
 
                 return;
             }
+
             await interaction.editReply("Updated!");
         })
     }
