@@ -24,7 +24,7 @@ export default class BanCommand implements ICommand
 
         new SlashCommandStringOption()
             .setName("reason")
-            .setDescription("The reason for the ban")
+            .setDescription("The reason for the unban")
             .setRequired(false),
     ]
 
@@ -61,25 +61,28 @@ export default class BanCommand implements ICommand
         {
             const user = await this.guardsman.bot.users.cache.find(user => user.id === member.id);
             if (!user) throw new Error("User could not be messaged.");
-
-            await user.send({
-                embeds: [
-                    new EmbedBuilder()
-                        .setTitle("Guardsman Moderation")
-                        .setDescription(`You have been **unbanned** from ${interaction.guild.name}. Please read the rules thoroughly before you start chatting.
-                        You can join rejoin the server [here](https://discord.com/invite/ctbKj67f2Q).
+            if (interaction.channel)
+            {
+                const invite = await interaction.guild.invites.create(`${interaction.channel.id}`, { maxUses: 1, unique: true, maxAge: 2592000, reason: `Member unban; Executed by ${interaction.member.nickname}`});
+                await user.send({
+                    embeds: [
+                        new EmbedBuilder()
+                            .setTitle("Guardsman Moderation")
+                            .setDescription(`You have been **unbanned** from ${interaction.guild.name}. Please read the rules thoroughly before you start chatting.
+                        You can join rejoin the server [here](${invite}).
                         `)
-                        .setColor(Colors.Red)
-                        .setFooter({ text: "Guardsman Moderation"})
-                        .setTimestamp()
-                        .addFields(
-                            {
-                                name: "Reason",
-                                value: unbanReason || "No Reason Provided"
-                            }
-                        )
-                ]
-            })
+                            .setColor(Colors.Red)
+                            .setFooter({ text: "Guardsman Moderation"})
+                            .setTimestamp()
+                            .addFields(
+                                {
+                                    name: "Reason",
+                                    value: unbanReason || "No Reason Provided"
+                                }
+                            )
+                    ]
+                })
+            }
         }
         catch (error)
         {
