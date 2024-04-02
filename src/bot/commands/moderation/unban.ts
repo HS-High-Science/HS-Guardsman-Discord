@@ -100,7 +100,7 @@ export default class BanCommand implements ICommand
 
         try
         {
-            await interaction.guild.bans.remove(member.id);
+            await interaction.guild.bans.remove(member.id, unbanReason || `No reason provided.` + `; Executed by: ${interaction.member.nickname}`);
         }
         catch (error)
         {

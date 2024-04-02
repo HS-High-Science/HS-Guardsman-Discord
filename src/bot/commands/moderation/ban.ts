@@ -88,7 +88,7 @@ export default class BanCommand implements ICommand
         try 
         {
             await interaction.guild.bans.create(member.id, {
-                reason: (banReason || `No reason provided.`) + `; Executed by: ${interaction.member.user.username}`
+                reason: (banReason || `No reason provided.`) + `; Executed by: ${interaction.member.nickname}`
             });
         } 
         catch (error) 

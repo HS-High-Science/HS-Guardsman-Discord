@@ -120,7 +120,7 @@ export default class CrossBanCommand implements ICommand
             try 
             {
                 await guild.bans.create(discordId, {
-                    reason: (banReason || `No reason provided.`) + `; Executed by: ${interaction.member.user.username}`
+                    reason: (banReason || `No reason provided.`) + `; Executed by: ${interaction.member.nickname}`
                 });
             } 
             catch (error) 

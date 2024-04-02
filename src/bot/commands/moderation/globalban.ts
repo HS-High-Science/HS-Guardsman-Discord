@@ -173,7 +173,7 @@ export default class GlobalBanCommand implements ICommand
             try 
             {
                 await guild.bans.create(userData.data.discord_id, {
-                    reason: (banReason || `No reason provided.`) + `; Executed by: ${interaction.member.user.username}`
+                    reason: (banReason || `No reason provided.`) + `; Executed by: ${interaction.member.nickname}`
                 });
             } 
             catch (error) 

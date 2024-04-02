@@ -119,7 +119,7 @@ export default class CrossUnbanSubcommand implements ICommand
         {
             try
             {
-                await guild.bans.remove(discordId, (unbanReason || `No reason provided.`) + `; Executed by: ${interaction.member.user.username}`);
+                await guild.bans.remove(discordId, unbanReason || `No reason provided.` + `; Executed by: ${interaction.member.nickname}`);
             }
             catch (error)
             {
