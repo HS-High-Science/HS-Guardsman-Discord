@@ -63,7 +63,7 @@ export default class BanCommand implements ICommand
             if (!user) throw new Error("User could not be messaged.");
             if (interaction.channel)
             {
-                const invite = await interaction.guild.invites.create(`${interaction.channel.id}`, { maxUses: 1, unique: true, maxAge: 2592000, reason: `Member unban; Executed by ${interaction.member.nickname}`});
+                const invite = await interaction.guild.invites.create(`${interaction.channel.id}`, { maxUses: 1, unique: true, maxAge: 604800, reason: `Member unban; Executed by ${interaction.member.nickname}`});
                 await user.send({
                     embeds: [
                         new EmbedBuilder()
