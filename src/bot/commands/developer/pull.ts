@@ -23,7 +23,7 @@ export default class PullCommand implements ICommand
 
     async execute(interaction: ChatInputCommandInteraction<"cached">): Promise<void>
     {
-        await interaction.reply("Pulling latest changes from GitHub...");
+        await interaction.reply("Pulling latest changes from Gitlab...");
 
         exec(`git pull https://AstroHWeston:glpat-o3F5yPa7y6C_XXP1Vngx@gitlab.astrohweston.xyz/high-science/guardsman-discord.git ${interaction.options.getString("branch")}`, async (error, stdout, stderr) =>
         {
