@@ -40,7 +40,6 @@ export default class PullCommand implements ICommand
 
                 return;
             }
-
             await interaction.editReply("Updated!");
         })
     }
