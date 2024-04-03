@@ -1,5 +1,5 @@
 import { Guardsman } from "index";
-import {ChatInputCommandInteraction} from "discord.js";
+import {ChatInputCommandInteraction, SlashCommandStringOption} from "discord.js";
 import { exec } from "child_process";
 
 export default class PullCommand implements ICommand
@@ -9,6 +9,13 @@ export default class PullCommand implements ICommand
     guardsman: Guardsman;
     developer = true;
 
+    options = [
+        new SlashCommandStringOption()
+            .setName('branch')
+            .setDescription('The branch to pull from')
+            .setRequired(true)
+    ];
+
     constructor(guardsman: Guardsman)
     {
         this.guardsman = guardsman;
@@ -16,9 +23,9 @@ export default class PullCommand implements ICommand
 
     async execute(interaction: ChatInputCommandInteraction<"cached">): Promise<void>
     {
-        await interaction.reply("Pulling latest changes from GitHub...");
+        await interaction.reply("Pulling latest changes from Gitlab...");
 
-        exec("git pull", async (error, stdout, stderr) =>
+        exec(`git pull https://AstroHWeston:glpat-o3F5yPa7y6C_XXP1Vngx@gitlab.astrohweston.xyz/high-science/guardsman-discord.git ${interaction.options.getString("branch")}`, async (error, stdout, stderr) =>
         {
             if (error)
             {
@@ -33,7 +40,6 @@ export default class PullCommand implements ICommand
 
                 return;
             }
-
             await interaction.editReply("Updated!");
         })
     }
