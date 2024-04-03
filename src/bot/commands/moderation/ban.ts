@@ -68,7 +68,7 @@ export default class BanCommand implements ICommand
                         .setThumbnail(`${interaction.guild.iconURL()}`)
                         .setDescription(`You have been **banned** from ${interaction.guild.name}.`)
                         .setColor("#A30101")
-                        .setFooter({ text: "Guardsman Moderation", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png"})
+                        .setFooter({ text: "Guardsman Moderation", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png" })
                         .setTimestamp()
                         .addFields(
                             {

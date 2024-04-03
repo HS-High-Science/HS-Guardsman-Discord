@@ -73,7 +73,7 @@ export default class BanCommand implements ICommand
                         You can join rejoin the server [here](${invite}).
                         `)
                             .setColor("#37a301")
-                            .setFooter({ text: "Guardsman Moderation"})
+                            .setFooter({ text: "Guardsman Moderation", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png" })
                             .setTimestamp()
                             .addFields(
                                 {
