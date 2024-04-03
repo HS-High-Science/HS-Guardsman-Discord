@@ -70,8 +70,7 @@ export default class BanCommand implements ICommand
                             .setTitle("Guardsman Moderation")
                             .setThumbnail(`${interaction.guild.iconURL()}`)
                             .setDescription(`You have been **unbanned** from ${interaction.guild.name}. Please read the rules thoroughly before you start chatting.
-                        You can join rejoin the server [here](${invite}).
-                        `)
+                        You can join rejoin the server [here](${invite}).`)
                             .setColor("#37a301")
                             .setFooter({ text: "Guardsman Moderation", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png" })
                             .setTimestamp()
