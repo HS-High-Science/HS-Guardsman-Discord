@@ -68,10 +68,11 @@ export default class BanCommand implements ICommand
                     embeds: [
                         new EmbedBuilder()
                             .setTitle("Guardsman Moderation")
+                            .setThumbnail(`${interaction.guild.iconURL()}`)
                             .setDescription(`You have been **unbanned** from ${interaction.guild.name}. Please read the rules thoroughly before you start chatting.
                         You can join rejoin the server [here](${invite}).
                         `)
-                            .setColor(Colors.Red)
+                            .setColor("#11A301FF")
                             .setFooter({ text: "Guardsman Moderation"})
                             .setTimestamp()
                             .addFields(
