@@ -58,9 +58,10 @@ export default class BanCommand implements ICommand
                 embeds: [
                     new EmbedBuilder()
                         .setTitle("Guardsman Moderation")
+                        .setThumbnail(`${interaction.guild.iconURL()}`)
                         .setDescription(`You have been **banned** from ${interaction.guild.name}.`)
-                        .setColor(Colors.Red)
-                        .setFooter({ text: "Guardsman Moderation"})
+                        .setColor("#A30101")
+                        .setFooter({ text: "Guardsman Moderation", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png"})
                         .setTimestamp()
                         .addFields(
                             {
