@@ -37,7 +37,7 @@ export default class BanCommand implements ICommand
         await interaction.deferReply();
 
         const banReason = interaction.options.getString("reason", false);
-        const member = interaction.options.getMember("user");
+        const member = interaction.options.getUser("user");
 
         if (!member) 
         {
@@ -119,7 +119,7 @@ export default class BanCommand implements ICommand
             embeds: [
                 new EmbedBuilder()
                         .setTitle("Guardsman Moderation")
-                        .setDescription(`${member.user.username} has been banned from the guild.`)
+                        .setDescription(`${member.username} has been banned from the guild.`)
                         .setColor(Colors.Red)
                         .setFooter({ text: "Guardsman Moderation"})
                         .setTimestamp()
