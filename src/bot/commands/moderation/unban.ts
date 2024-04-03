@@ -72,7 +72,7 @@ export default class BanCommand implements ICommand
                             .setDescription(`You have been **unbanned** from ${interaction.guild.name}. Please read the rules thoroughly before you start chatting.
                         You can join rejoin the server [here](${invite}).
                         `)
-                            .setColor("#11A301FF")
+                            .setColor("#37a301")
                             .setFooter({ text: "Guardsman Moderation"})
                             .setTimestamp()
                             .addFields(
