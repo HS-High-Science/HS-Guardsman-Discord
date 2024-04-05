@@ -11,7 +11,7 @@ export default class SearchUserCommand implements ICommand
     options = [
         new SlashCommandStringOption()
             .setName("query")
-            .setDescription("The field to search for (Roblox ID, Discord ID)")
+            .setDescription("The field to search for (Roblox Username)")
             .setRequired(true)
             .setAutocomplete(true)
     ]
