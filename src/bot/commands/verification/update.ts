@@ -22,6 +22,8 @@ export default class UpdateCommand implements ICommand
             .where("discord_id", member.id)
             .first();
 
+        console.log(existingUserData);
+
         if (!existingUserData) 
         {
             await interaction.reply({
