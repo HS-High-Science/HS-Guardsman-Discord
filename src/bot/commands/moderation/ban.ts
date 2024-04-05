@@ -1,11 +1,4 @@
-import {
-    ChatInputCommandInteraction,
-    Colors,
-    EmbedBuilder,
-    PermissionFlagsBits,
-    SlashCommandStringOption,
-    SlashCommandUserOption
-} from "discord.js";
+import { ChatInputCommandInteraction, Colors, EmbedBuilder, PermissionFlagsBits, SlashCommandUserOption, SlashCommandStringOption } from "discord.js";
 import { Guardsman } from "index";
 
 export default class BanCommand implements ICommand 
@@ -37,7 +30,7 @@ export default class BanCommand implements ICommand
         await interaction.deferReply();
 
         const banReason = interaction.options.getString("reason", false);
-        const member = interaction.options.getUser("user");
+        const member = interaction.options.getMember("user");
 
         if (!member) 
         {
@@ -65,10 +58,9 @@ export default class BanCommand implements ICommand
                 embeds: [
                     new EmbedBuilder()
                         .setTitle("Guardsman Moderation")
-                        .setThumbnail(`${interaction.guild.iconURL()}`)
                         .setDescription(`You have been **banned** from ${interaction.guild.name}.`)
-                        .setColor("#A30101")
-                        .setFooter({ text: "Guardsman Moderation", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png" })
+                        .setColor(Colors.Red)
+                        .setFooter({ text: "Guardsman Moderation"})
                         .setTimestamp()
                         .addFields(
                             {
@@ -96,7 +88,7 @@ export default class BanCommand implements ICommand
         try 
         {
             await interaction.guild.bans.create(member.id, {
-                reason: (banReason || `No reason provided.`) + `; Executed by: ${interaction.member.nickname}`
+                reason: (banReason || `No reason provided.`) + `; Executed by: ${interaction.member.user.username}`
             });
         } 
         catch (error) 
@@ -119,7 +111,7 @@ export default class BanCommand implements ICommand
             embeds: [
                 new EmbedBuilder()
                         .setTitle("Guardsman Moderation")
-                        .setDescription(`${member.username} has been banned from the guild.`)
+                        .setDescription(`${member.user.username} has been banned from the guild.`)
                         .setColor(Colors.Red)
                         .setFooter({ text: "Guardsman Moderation"})
                         .setTimestamp()
