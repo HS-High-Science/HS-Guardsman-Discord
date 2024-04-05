@@ -116,6 +116,7 @@ export default class UpdateCommand implements ICommand
                         } 
                         catch (error: any) 
                         {
+                            console.log(error);
                             errors.push(error);
                         }
 
