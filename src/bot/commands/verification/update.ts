@@ -107,6 +107,8 @@ export default class UpdateCommand implements ICommand
 
                         try 
                         {
+                            console.log(existingUserData.roblox_id);
+                            console.log(gamepassId);
                             const apiUrl = `https://inventory.roblox.com/v1/users/${existingUserData.roblox_id}/items/1/${gamepassId}/is-owned`
                             const returnedApiData = await axios.get(apiUrl);
                             console.log(returnedApiData);
