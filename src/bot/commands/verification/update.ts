@@ -22,8 +22,6 @@ export default class UpdateCommand implements ICommand
             .where("discord_id", member.id)
             .first();
 
-        console.log(existingUserData);
-
         if (!existingUserData) 
         {
             await interaction.reply({
@@ -109,8 +107,9 @@ export default class UpdateCommand implements ICommand
 
                         try 
                         {
-                            const apiUrl = `https://inventory.roblox.com/v1/users/62097945/items/1/${gamepassId}/is-owned`
+                            const apiUrl = `https://inventory.roblox.com/v1/users/${existingUserData.roblox_id}/items/1/${gamepassId}/is-owned`
                             const returnedApiData = await axios.get(apiUrl);
+                            console.log(returnedApiData);
                             userOwnsGamepass = returnedApiData.data == "true";
                         } 
                         catch (error: any) 
