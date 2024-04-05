@@ -146,6 +146,7 @@ export default class UpdateCommand implements ICommand
             } 
             catch (error) 
             {
+                console.log(error);
                 errors.push(`Failed to apply a role. ${error}`);
             }
         }
