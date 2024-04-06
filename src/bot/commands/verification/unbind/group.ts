@@ -48,7 +48,7 @@ export default class UnbindGroupSubcommand implements ICommand
             type: "group",
             groupId: groupId,
             minRank: minRank || 0,
-            maxRank: maxRank || 255
+            maxRank: typeof maxRank === 'number' ? maxRank : 255
         }
 
         const existingRole = await this.guardsman.database<IRoleBind>("verification_binds")
