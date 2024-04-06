@@ -68,7 +68,7 @@ async function updateUser(guardsman: Guardsman, guild: Guild, member: GuildMembe
                     try {
                         const apiUrl = `https://inventory.roblox.com/v1/users/${existingUserData.roblox_id}/items/1/${gamepassId}/is-owned`
                         const returnedApiData = await axios.get(apiUrl);
-                        userOwnsGamepass = returnedApiData.data == "true";
+                        userOwnsGamepass = returnedApiData.data;
                     } catch (error: any) {
                         errors.push(error);
                     }
