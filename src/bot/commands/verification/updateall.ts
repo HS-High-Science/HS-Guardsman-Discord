@@ -22,11 +22,19 @@ export default class UpdateAllCommand implements ICommand {
 
         const guildMembers = await guild.members.list({ limit: 1000 })
 
+<<<<<<< HEAD
         const interact = await interaction.reply({
             embeds: [
                 new EmbedBuilder()
                     .setColor(Colors.Orange)
                     .setTitle("Guardsman Update All")
+=======
+        await interaction.reply({
+            embeds: [
+                new EmbedBuilder()
+                    .setColor(Colors.Orange)
+                    .setTitle("Verify All")
+>>>>>>> 4f209ea02cbfa00afa2ac34018188da82105a4cf
                     .setDescription(`Updating all guild members. This may take some time.`)
                     .setTimestamp()
                     .setFooter({ text: "Guardsman Verification" })
@@ -47,8 +55,13 @@ export default class UpdateAllCommand implements ICommand {
                 await interaction.channel?.send({
                     embeds: [
                         new EmbedBuilder()
+<<<<<<< HEAD
                             .setColor(Colors.Red)
                             .setTitle("Guardsman User Update")
+=======
+                            .setColor(Colors.Orange)
+                            .setTitle("User Update")
+>>>>>>> 4f209ea02cbfa00afa2ac34018188da82105a4cf
                             .setDescription(`Update for <@${guildMember.id}> ran into a slight problem that may or may not impact the user. Errors: ${userReturn.errors.join("\n")}`)
                             .setTimestamp()
                             .setFooter({ text: "Guardsman Verification" })
@@ -56,6 +69,7 @@ export default class UpdateAllCommand implements ICommand {
                 })
             }
 
+<<<<<<< HEAD
             const guildMembersArray = Array.from(guildMembers.values());
 
             await interact.edit({
@@ -79,6 +93,18 @@ export default class UpdateAllCommand implements ICommand {
                 new EmbedBuilder()
                     .setColor(Colors.Green)
                     .setTitle("Guardsman Update All")
+=======
+            await new Promise((resolve) => {
+                setTimeout(resolve, 5_000)
+            })
+        }
+
+        await interaction.channel?.send({
+            embeds: [
+                new EmbedBuilder()
+                    .setColor(Colors.Green)
+                    .setTitle("Update All")
+>>>>>>> 4f209ea02cbfa00afa2ac34018188da82105a4cf
                     .setDescription(`Update all completed.`)
                     .setTimestamp()
                     .setFooter({ text: "Guardsman Verification" })
