@@ -12,6 +12,24 @@ async function updateUser(guardsman: Guardsman, guild: Guild, member: GuildMembe
     const removedRoles: IRoleBind[] = [];
     const errors: string[] = [];
 
+    // see if guild has verified / unverified roles;
+    const verifiedRole = guild.roles.cache.find(role => role.name.includes("Verified") && !role.name.includes("Unverified"));
+    const unverifiedRole = guild.roles.cache.find(role => role.name.includes("Unverified"));
+
+    if (verifiedRole) allowedRoles.push({
+        id: -1,
+        guild_id: guild.id,
+        role_id: verifiedRole.id,
+        role_data: ""
+    });
+
+    if (unverifiedRole) removedRoles.push({
+        id: -1,
+        guild_id: guild.id,
+        role_id: unverifiedRole.id,
+        role_data: ""
+    });
+
     // parse allowed roles
     for (const verificationBind of verificationBinds) {
         const bindData: RoleData<any> = JSON.parse(verificationBind.role_data);
@@ -67,6 +85,10 @@ async function updateUser(guardsman: Guardsman, guild: Guild, member: GuildMembe
                     if (canAddRole != null) {
                         allowedRoles.push(verificationBind);
                     }
+
+                    break;
+                case "default":
+                    allowedRoles.push(verificationBind);
 
                     break;
                 default:
