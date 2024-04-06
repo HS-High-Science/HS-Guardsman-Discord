@@ -35,7 +35,7 @@ export default class UnbindGamePassSubcommand implements ICommand {
 
         // validate role settings
         const gamepassRoleBind: RoleData<RoleDataGamePassBind> = {
-            type: "group",
+            type: "gamepass",
             gamepassId: gamepassId
         }
 
