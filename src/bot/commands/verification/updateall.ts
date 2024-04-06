@@ -22,11 +22,11 @@ export default class UpdateAllCommand implements ICommand {
 
         const guildMembers = await guild.members.list({ limit: 1000 })
 
-        await interaction.reply({
+        const interact = await interaction.reply({
             embeds: [
                 new EmbedBuilder()
                     .setColor(Colors.Orange)
-                    .setTitle("Verify All")
+                    .setTitle("Guardsman Update All")
                     .setDescription(`Updating all guild members. This may take some time.`)
                     .setTimestamp()
                     .setFooter({ text: "Guardsman Verification" })
@@ -47,8 +47,8 @@ export default class UpdateAllCommand implements ICommand {
                 await interaction.channel?.send({
                     embeds: [
                         new EmbedBuilder()
-                            .setColor(Colors.Orange)
-                            .setTitle("User Update")
+                            .setColor(Colors.Red)
+                            .setTitle("Guardsman User Update")
                             .setDescription(`Update for <@${guildMember.id}> ran into a slight problem that may or may not impact the user. Errors: ${userReturn.errors.join("\n")}`)
                             .setTimestamp()
                             .setFooter({ text: "Guardsman Verification" })
@@ -56,16 +56,29 @@ export default class UpdateAllCommand implements ICommand {
                 })
             }
 
+            const guildMembersArray = Array.from(guildMembers.values());
+
+            await interact.edit({
+                embeds: [
+                    new EmbedBuilder()
+                        .setColor(Colors.Orange)
+                        .setTitle("Guardsman Update All")
+                        .setDescription(`Updating all guild members. This may take some time.\nProgress: ${guildMembersArray.indexOf(guildMember) + 1}/${guildMembersArray.length} (${Math.round(((guildMembersArray.indexOf(guildMember) + 1) / guildMembersArray.length) * 100)}%)`)
+                        .setTimestamp()
+                        .setFooter({ text: "Guardsman Verification" })
+                ]
+            })
+
             await new Promise((resolve) => {
-                setTimeout(resolve, 5_000)
+                setTimeout(resolve, (Math.floor(Math.random() * 5) * 1000) + 3_000)
             })
         }
 
-        await interaction.channel?.send({
+        await interact.edit({
             embeds: [
                 new EmbedBuilder()
                     .setColor(Colors.Green)
-                    .setTitle("Update All")
+                    .setTitle("Guardsman Update All")
                     .setDescription(`Update all completed.`)
                     .setTimestamp()
                     .setFooter({ text: "Guardsman Verification" })
