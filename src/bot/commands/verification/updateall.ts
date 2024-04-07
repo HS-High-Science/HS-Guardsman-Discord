@@ -71,7 +71,7 @@ export default class UpdateAllCommand implements ICommand {
 
             await new Promise((resolve) => {
                 setTimeout(resolve, 5_000)
-            });
+            })
         }
 
         await interact.edit({
