@@ -17,7 +17,7 @@ export default class ClearPendingVerifications implements ICommand
     {
         await interaction.reply("Clearing...")
 
-        console.log(this.guardsman.database<IVerificationConfirmation>("pending_verification").select("*"));
+        console.log(this.guardsman.database("pending_verification").select("*"));
         this.guardsman.database<IVerificationConfirmation>("pending_verification")
             .del();
 
