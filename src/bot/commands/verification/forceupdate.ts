@@ -26,6 +26,7 @@ export default class UpdateCommand implements ICommand {
     }
 
     async execute(interaction: ChatInputCommandInteraction<"cached">): Promise<void> {
+        await interaction.deferReply();
         const guild = interaction.guild;
 
         const user = interaction.options.getUser("user", true);
@@ -36,7 +37,7 @@ export default class UpdateCommand implements ICommand {
             .first();
 
         if (!existingUserData) {
-            await interaction.reply({
+            await interaction.editReply({
                 embeds: [
                     new EmbedBuilder()
                         .setTitle("Guardsman Verification")
@@ -51,7 +52,7 @@ export default class UpdateCommand implements ICommand {
         }
 
         if (!guildMember) {
-            await interaction.reply({
+            await interaction.editReply({
                 embeds: [
                     new EmbedBuilder()
                         .setTitle("Guardsman Verification")
@@ -92,7 +93,7 @@ export default class UpdateCommand implements ICommand {
             });
         }
 
-        await interaction.reply({
+        await interaction.editReply({
             embeds: [InfoEmbed]
         })
     }
