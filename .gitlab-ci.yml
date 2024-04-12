@@ -2,6 +2,7 @@ image: node:latest
 
 stages:
   - build
+  - run
 
 compile:
   stage: build
@@ -15,3 +16,8 @@ compile:
   only:
     - master
     - merge_requests
+
+testrun:
+  stage: run
+  script:
+    -npm run ci --if-present
