@@ -21,3 +21,9 @@ testrun:
   stage: run
   script:
     - npm run ci --if-present
+  artifacts:
+    paths:
+      - node_modules
+  only:
+    - master
+    - merge_requests
