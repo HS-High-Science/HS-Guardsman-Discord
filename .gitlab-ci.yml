@@ -20,4 +20,4 @@ compile:
 testrun:
   stage: run
   script:
-    -npm run ci --if-present
+    - npm run ci --if-present
