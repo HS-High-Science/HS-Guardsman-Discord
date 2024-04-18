@@ -1,59 +1,67 @@
 import { randomUUID } from "node:crypto";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, Colors, EmbedBuilder } from "discord.js";
 import { Guardsman } from "index";
+import { getSetting } from "../../util/guildSettings.js";
 
-export default class VerifyCommand implements ICommand
-{
+export default class VerifyCommand implements ICommand {
     name: Lowercase<string> = "verify";
     description: string = "Allows users to link their ROBLOX account to Discord.";
     guardsman: Guardsman;
 
-    constructor(guardsman: Guardsman)
-    {
+    constructor(guardsman: Guardsman) {
         this.guardsman = guardsman;
     }
 
-    async execute(interaction: ChatInputCommandInteraction<"cached">): Promise<void> 
-    {
+    async execute(interaction: ChatInputCommandInteraction<"cached">): Promise<void> {
         const member = interaction.member;
         const channel = interaction.channel;
 
-        const existingUserData = await this.guardsman.database<IUser>("users")
-        .where("discord_id", member.id)
-        .first();
+        const verificationAllowed = await getSetting(this.guardsman, interaction.guild, "allowVerification");
+        if (!verificationAllowed) {
+            await interaction.reply({
+                embeds: [
+                    new EmbedBuilder()
+                        .setTitle("Guardsman Verification")
+                        .setDescription("Verification is currently turned off in this guild!")
+                        .setColor(Colors.Red)
+                        .setTimestamp()
+                        .setFooter({ text: "Guardsman Verification" })
+                ],
+                ephemeral: true
+            })
 
-        if (existingUserData)
-        {
-            const continueVerification = await new Promise<boolean>(async (resolve) =>
-            {
+            return;
+        }
+
+        const existingUserData = await this.guardsman.database<IUser>("users")
+            .where("discord_id", member.id)
+            .first();
+
+        if (existingUserData) {
+            const continueVerification = await new Promise<boolean>(async (resolve) => {
                 const collector = channel?.createMessageComponentCollector({
                     time: 30_000,
                     filter: (interact) => interact.member.id === member.id,
-                    maxComponents: 1 
+                    maxComponents: 1
                 })
-    
-                collector?.on("collect", (collected) =>
-                {
+
+                collector?.on("collect", (collected) => {
                     collected.deferUpdate();
 
-                    if (collected.customId == "continue")
-                    {
+                    if (collected.customId == "continue") {
                         resolve(true);
                     }
-                    else
-                    {
+                    else {
                         resolve(false);
                     }
                 })
 
-                collector?.on("end", (collected) =>
-                {
-                    if (collected.size == 0)
-                    {
+                collector?.on("end", (collected) => {
+                    if (collected.size == 0) {
                         resolve(false);
                     }
                 })
-    
+
                 await interaction.reply({
                     ephemeral: true,
                     components: [
@@ -69,7 +77,7 @@ export default class VerifyCommand implements ICommand
                                     .setStyle(ButtonStyle.Danger)
                             )
                     ],
-    
+
                     embeds: [
                         new EmbedBuilder()
                             .setTitle("Guardsman Verification")
@@ -80,41 +88,38 @@ export default class VerifyCommand implements ICommand
                     ]
                 })
             })
-            .then((response) =>
-            {
-                if (!response)
-                {
-                    interaction.editReply({
+                .then((response) => {
+                    if (!response) {
+                        interaction.editReply({
+                            components: [],
+                            embeds: [
+                                new EmbedBuilder()
+                                    .setTitle("Guardsman Verification")
+                                    .setDescription(`Prompt cancelled or timed-out.`)
+                                    .setColor(Colors.Red)
+                                    .setTimestamp()
+                                    .setFooter({ text: "Guardsman Verification" })
+                            ]
+                        })
+
+                        return false;
+                    }
+
+                    return response;
+                })
+                .catch((error) => {
+                    return interaction.editReply({
                         components: [],
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Guardsman Verification")
-                                .setDescription(`Prompt cancelled or timed-out.`)
+                                .setDescription(`${error}`)
                                 .setColor(Colors.Red)
                                 .setTimestamp()
                                 .setFooter({ text: "Guardsman Verification" })
                         ]
                     })
-
-                    return false;
-                }
-
-                return response;
-            })
-            .catch((error) =>
-            {
-                return interaction.editReply({
-                    components: [],
-                    embeds: [
-                        new EmbedBuilder()
-                            .setTitle("Guardsman Verification")
-                            .setDescription(`${error}`)
-                            .setColor(Colors.Red)
-                            .setTimestamp()
-                            .setFooter({ text: "Guardsman Verification" })
-                    ]
                 })
-            })
 
             if (!continueVerification) return;
         }
@@ -122,10 +127,10 @@ export default class VerifyCommand implements ICommand
         const token = randomUUID().replace("-", "") + `-${member.id}`;
 
         await this.guardsman.database<IVerificationConfirmation>("pending_verification")
-        .insert({
-            discord_id: interaction.member.id,
-            token: token
-        })
+            .insert({
+                discord_id: interaction.member.id,
+                token: token
+            })
 
         this.guardsman.bot.pendingVerificationInteractions[member.id] = interaction;
 
@@ -152,12 +157,10 @@ export default class VerifyCommand implements ICommand
             ]
         }
 
-        if (replied)
-        {
+        if (replied) {
             await interaction.editReply(replyData);
         }
-        else
-        {
+        else {
             await interaction.reply({
                 ephemeral: true,
                 ...replyData
