@@ -27,6 +27,7 @@ export default class UpdateCommand implements ICommand {
 
     async execute(interaction: ChatInputCommandInteraction<"cached">): Promise<void> {
         await interaction.deferReply();
+
         const guild = interaction.guild;
 
         const user = interaction.options.getUser("user", true);
@@ -77,14 +78,24 @@ export default class UpdateCommand implements ICommand {
             .addFields(
                 {
                     name: "Added Roles",
-                    value: `${userReturn.addedRoles.length > 0 && "• " || "None."}${userReturn.addedRoles.map(r => "<@&" + r.role_id + '>').join("\n • ")}`
+                    value: `${userReturn.addedRoles.length > 0 && "• " || "None."}${userReturn.addedRoles.map(r => "<@&" + r.role_id + '>').join("\n • ")}`,
+                    inline: true
                 },
 
                 {
                     name: "Removed Roles",
-                    value: `${userReturn.removedRoles.length > 0 && "• " || "None."}${userReturn.removedRoles.map(r => "<@&" + r.role_id + '>').join("\n •")}`
+                    value: `${userReturn.removedRoles.length > 0 && "• " || "None."}${userReturn.removedRoles.map(r => "<@&" + r.role_id + '>').join("\n •")}`,
+                    inline: true
                 }
             );
+
+        if (userReturn.extra) {
+            InfoEmbed.setColor(Colors.Red)
+            InfoEmbed.addFields({
+                name: "Extra",
+                value: userReturn.extra
+            });
+        }
 
         if (userReturn.errors.length > 0) {
             InfoEmbed.addFields({
