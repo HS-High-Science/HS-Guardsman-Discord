@@ -131,7 +131,7 @@ export default class CrossUnbanSubcommand implements ICommand
             embeds: [
                 new EmbedBuilder()
                     .setTitle("Guardsman Moderation")
-                    .setDescription(`<@${discordId}>(${discordId}) has been unbanned from all Guardsman-controlled guilds.`)
+                    .setDescription(`<@${discordId}> (${discordId}) has been unbanned from across all Guardsman-controlled guilds.`)
                     .setColor(Colors.Red)
                     .setFooter({ text: "Guardsman Moderation"})
                     .setTimestamp()
