@@ -3,13 +3,14 @@ import {
     ApplicationCommandOptionBase,
     ChatInputCommandInteraction, Colors, EmbedBuilder,
     SlashCommandNumberOption,
-    SlashCommandRoleOption
+    SlashCommandRoleOption, PermissionFlagsBits
 } from "discord.js";
 
 export default class BindGamePassSubcommand implements ICommand {
     name: Lowercase<string> = "gamepass";
     description: string = "Allows guild administrators to bind ROBLOX gamepass data to the guild for users to obtain roles.";
     guardsman: Guardsman;
+    defaultMemberPermissions = PermissionFlagsBits.ManageRoles;
     options: ApplicationCommandOptionBase[] = [
         new SlashCommandRoleOption()
             .setName("role")
@@ -21,8 +22,7 @@ export default class BindGamePassSubcommand implements ICommand {
             .setRequired(true),
     ];
 
-    constructor(guardsman: Guardsman) 
-    {
+    constructor(guardsman: Guardsman) {
         this.guardsman = guardsman;
     }
 
@@ -47,8 +47,7 @@ export default class BindGamePassSubcommand implements ICommand {
             })
             .first();
 
-        if (existingRole) 
-        {
+        if (existingRole) {
             await interaction.reply({
                 embeds: [
                     new EmbedBuilder()
@@ -56,7 +55,7 @@ export default class BindGamePassSubcommand implements ICommand {
                         .setDescription(`A gamepass role bind for <@&${guildRole.id}> with those properties already exists.`)
                         .setColor(Colors.Red)
                         .setTimestamp()
-                        .setFooter({text: "Guardsman Database"})
+                        .setFooter({ text: "Guardsman Database" })
                 ]
             });
 
@@ -77,7 +76,7 @@ export default class BindGamePassSubcommand implements ICommand {
                     .setDescription(`Successfully added a gamepass bind for <@&${guildRole.id}> for gamepass ${gamepassId}.`)
                     .setColor(Colors.Green)
                     .setTimestamp()
-                    .setFooter({text: "Guardsman Database"})
+                    .setFooter({ text: "Guardsman Database" })
             ]
         })
     }

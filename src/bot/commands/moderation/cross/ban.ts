@@ -133,7 +133,7 @@ export default class CrossBanCommand implements ICommand
             embeds: [
                 new EmbedBuilder()
                         .setTitle("Guardsman Moderation")
-                        .setDescription(`<@${discordId}>(${discordId}) has been globally banned from all Guardsman-controlled guilds.`)
+                        .setDescription(`<@${discordId}> (${discordId}) has been banned across all Guardsman-controlled guilds..`)
                         .setColor(Colors.Red)
                         .setFooter({ text: "Guardsman Moderation"})
                         .setTimestamp()
