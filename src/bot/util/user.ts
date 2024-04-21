@@ -1,6 +1,7 @@
 import { Guild, GuildMember } from "discord.js";
 import { Guardsman } from "../../index.js";
 import axios from "axios";
+import { getSetting } from "./guildSettings.js";
 
 async function updateUser(guardsman: Guardsman, guild: Guild, member: GuildMember, existingUserData: IUser) {
     const verificationBinds = await guardsman.database<IRoleBind>("verification_binds")
@@ -11,6 +12,29 @@ async function updateUser(guardsman: Guardsman, guild: Guild, member: GuildMembe
     const addedRoles: IRoleBind[] = [];
     const removedRoles: IRoleBind[] = [];
     const errors: string[] = [];
+
+    // nuke users roles for their account age if too low
+    const ageSetting = await getSetting(guardsman, guild, "accountAge");
+    const accountAge = (await guardsman.roblox.getPlayerInfo(parseInt(existingUserData.roblox_id))).age;
+
+    if (accountAge !== undefined) {
+        if (new Date().getTime() < new Date(accountAge).getTime() + ((ageSetting as number) * 24 * 60 * 60 * 1000)) {
+            const roles = member.roles.cache.filter(role => verificationBinds.find(r => r.role_id == role.id) != null);
+
+            for (const role of roles) {
+                removedRoles.push({
+                    id: -1,
+                    guild_id: guild.id,
+                    role_id: role[0],
+                    role_data: ""
+                })
+            }
+
+            await member.roles.remove(roles);
+
+            return { addedRoles, removedRoles, errors, extra: `Your roblox account is too young to join this guild! Minimum: \`${ageSetting}\` days.` };
+        }
+    }
 
     // see if guild has verified / unverified roles;
     const verifiedRole = guild.roles.cache.find(role => role.name.includes("Verified") && !role.name.includes("Unverified"));
@@ -163,7 +187,10 @@ async function updateUser(guardsman: Guardsman, guild: Guild, member: GuildMembe
 
     // Set nickname
     try {
-        await member.setNickname(existingUserData.username);
+        const setRobloxUsername = await getSetting(guardsman, guild, "changeNicknameToRobloxName");
+        if (setRobloxUsername) {
+            await member.setNickname(existingUserData.username);
+        }
     } catch (error) {
         errors.push(`Failed to set member nickname: ${error}`);
     }

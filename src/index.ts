@@ -12,8 +12,7 @@ import { User } from "discord.js";
 import sentry from "@sentry/node";
 const dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
-export enum GuardsmanState
-{
+export enum GuardsmanState {
     OFFLINE,
     STARTING,
     ONLINE,
@@ -37,13 +36,11 @@ class GuardsmanObject {
     api: API;
     bot: Bot;
 
-    constructor()
-    {
+    constructor() {
         this.log = new logger("Guardsman", this);
 
         const argv = process.argv;
-        if (argv.includes("--ci"))
-        {
+        if (argv.includes("--ci")) {
             this.log.warn("USING CI ENVIRONMENT.")
             this.ci = true;
             this.environment.DISCORD_TOKEN = "NO_LOGIN"
@@ -70,9 +67,6 @@ class GuardsmanObject {
         this.log.debug("Connecting to database...")
         this.database = knex({
             client: this.environment.DB_CONNECTION,
-            migrations: {
-                directory: `${dirname}/../migrations`
-            },
             connection: {
                 host: this.environment.DB_HOST,
                 port: parseInt(this.environment.DB_PORT, 10),
@@ -89,15 +83,13 @@ class GuardsmanObject {
 
         this.log.debug("Connecting to ROBLOX API...")
         this.roblox = Noblox;
-        if (!this.ci)
-        {
-        //    this.roblox.setCookie(this.environment.ROBLOX_COOKIE).then(_ => console.log);
+        if (!this.ci) {
+            //    this.roblox.setCookie(this.environment.ROBLOX_COOKIE).then(_ => console.log);
         }
 
         this.log.debug("Hooking in to Sentry...")
         sentry.init({
             dsn: this.environment.SENTRY_DSN,
-
         })
 
         this.log.info("Creating backend Axios instance...")
@@ -136,49 +128,71 @@ class GuardsmanObject {
     }
 
     userbase = {
-        checkPermissionNode: async (user: User, node: GuardsmanPermissionNode) : Promise<boolean> => {
+        checkPermissionNode: async (user: User, node: GuardsmanPermissionNode): Promise<boolean> => {
             let userData: IAPIUser
 
-            try
-            {
+            try {
                 userData = (await this.backend.get(`discord/user/by-discord/${user.id}`)).data
             }
-            catch (error)
-            {
+            catch (error) {
                 return false;
             }
 
             return userData.permissions[node];
         },
 
-        getPermissionLevel: async (user: User) : Promise<number> => {
+        getPermissionLevel: async (user: User): Promise<number> => {
             let userData: IAPIUser
 
-            try
-            {
+            try {
                 userData = (await this.backend.get(`discord/user/by-discord/${user.id}`)).data
             }
-            catch (error)
-            {
+            catch (error) {
                 return 0;
             }
 
             return userData.position;
         },
 
-        getId: async (user: User) : Promise<number> => {
+        getId: async (user: User): Promise<number> => {
             let userData: IAPIUser
 
-        try
-        {
-            userData = (await this.backend.get(`discord/user/by-discord/${user.id}`)).data
-        }
-        catch (error)
-        {
-            return 0;
-        }
+            try {
+                userData = (await this.backend.get(`discord/user/by-discord/${user.id}`)).data
+            }
+            catch (error) {
+                return 0;
+            }
 
-        return userData.id;
+            return userData.id;
+        }
+    }
+
+    configuration = {
+        getSettings: async (guildId: string): Promise<IGuildConfiguration | null> => {
+            let guildSettings: IGuildConfiguration;
+
+            try {
+                guildSettings = (await this.backend.get(`discord/${guildId}/settings`)).data;
+            }
+            catch (error) {
+                return null;
+            }
+
+            return guildSettings;
+        },
+
+        updateSetting: async (guildId: string, settings: {}): Promise<boolean> => {
+            let guildSettingsStatus;
+
+            try {
+                guildSettingsStatus = (await this.backend.put(`discord/${guildId}/settings`, settings)).data;
+            }
+            catch (error) {
+                return false;
+            }
+
+            return guildSettingsStatus["success"];
         }
     }
 }

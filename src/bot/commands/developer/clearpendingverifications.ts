@@ -14,9 +14,8 @@ export default class ClearPendingVerifications implements ICommand {
     async execute(interaction: ChatInputCommandInteraction<"cached">): Promise<void> {
         await interaction.reply("Clearing...")
 
-        this.guardsman.database<IVerificationConfirmation>("pending_verification")
-            .select("*")
-            .del();
+        await this.guardsman.database<IVerificationConfirmation>("pending_verification")
+            .delete("*")
 
         await interaction.editReply("Cleared!")
     }

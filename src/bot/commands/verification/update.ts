@@ -1,6 +1,7 @@
 import { ChatInputCommandInteraction, Colors, EmbedBuilder } from "discord.js";
 import { Guardsman } from "index";
 import { updateUser } from "../../util/user.js"
+import { getSetting } from "../../util/guildSettings.js";
 
 export default class UpdateCommand implements ICommand {
     name: Lowercase<string> = "update";
@@ -13,8 +14,26 @@ export default class UpdateCommand implements ICommand {
 
     async execute(interaction: ChatInputCommandInteraction<"cached">): Promise<void> {
         await interaction.deferReply();
+
         const member = interaction.member;
         const guild = interaction.guild;
+
+        const updatingAllowed = await getSetting(this.guardsman, guild, "allowUpdating");
+        if (!updatingAllowed) {
+            await interaction.reply({
+                embeds: [
+                    new EmbedBuilder()
+                        .setTitle("Guardsman Verification")
+                        .setDescription("User updating is currently turned off in this guild!")
+                        .setColor(Colors.Red)
+                        .setTimestamp()
+                        .setFooter({ text: "Guardsman Verification" })
+                ],
+                ephemeral: true
+            })
+
+            return;
+        }
 
         const existingUserData = await this.guardsman.database<IUser>("users")
             .where("discord_id", member.id)
@@ -46,14 +65,24 @@ export default class UpdateCommand implements ICommand {
             .addFields(
                 {
                     name: "Added Roles",
-                    value: `${userReturn.addedRoles.length > 0 && "• " || "None."}${userReturn.addedRoles.map(r => "<@&" + r.role_id + '>').join("\n • ")}`
+                    value: `${userReturn.addedRoles.length > 0 && "• " || "None."}${userReturn.addedRoles.map(r => "<@&" + r.role_id + '>').join("\n • ")}`,
+                    inline: true
                 },
 
                 {
                     name: "Removed Roles",
-                    value: `${userReturn.removedRoles.length > 0 && "• " || "None."}${userReturn.removedRoles.map(r => "<@&" + r.role_id + '>').join("\n •")}`
+                    value: `${userReturn.removedRoles.length > 0 && "• " || "None."}${userReturn.removedRoles.map(r => "<@&" + r.role_id + '>').join("\n •")}`,
+                    inline: true
                 }
             );
+
+        if (userReturn.extra) {
+            InfoEmbed.setColor(Colors.Red)
+            InfoEmbed.addFields({
+                name: "Extra",
+                value: userReturn.extra
+            });
+        }
 
         if (userReturn.errors.length > 0) {
             InfoEmbed.addFields({
