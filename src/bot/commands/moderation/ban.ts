@@ -40,7 +40,7 @@ export default class BanCommand implements ICommand
                         .setTitle("Guardsman Moderation")
                         .setDescription("No member was found.")
                         .setColor(Colors.Red)
-                        .setFooter({ text: "Guardsman Moderation" })
+                        .setFooter({ text: "Guardsman Moderation", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png" })
                         .setTimestamp()
                 ]
             });
@@ -58,9 +58,9 @@ export default class BanCommand implements ICommand
                 embeds: [
                     new EmbedBuilder()
                         .setTitle("Guardsman Moderation")
-                        .setDescription(`You have been **banned** from ${interaction.guild.name}.`)
+                        .setDescription(`You have been **banned** from ${interaction.guild.name}. You may appeal into the appeals server. [HSAC Invite](https://discord.gg/vm4dMNmA)`)
                         .setColor(Colors.Red)
-                        .setFooter({ text: "Guardsman Moderation"})
+                        .setFooter({ text: "Guardsman Moderation", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png" })
                         .setTimestamp()
                         .addFields(
                             {
@@ -79,7 +79,7 @@ export default class BanCommand implements ICommand
                         .setTitle("Guardsman Moderation")
                         .setDescription(`Failed to send ban DM. ${error}`)
                         .setColor(Colors.Orange)
-                        .setFooter({ text: "Guardsman API" })
+                        .setFooter({ text: "Guardsman API", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png" })
                         .setTimestamp()
                 ]
             });
@@ -99,7 +99,7 @@ export default class BanCommand implements ICommand
                         .setTitle("Guardsman Moderation")
                         .setDescription(`Failed to ban <@${member.id}>. ${error}`)
                         .setColor(Colors.Red)
-                        .setFooter({ text: "Guardsman Moderation" })
+                        .setFooter({ text: "Guardsman Moderation", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png" })
                         .setTimestamp()
                 ]
             });
@@ -113,7 +113,7 @@ export default class BanCommand implements ICommand
                         .setTitle("Guardsman Moderation")
                         .setDescription(`${member.user.username} has been banned from the guild.`)
                         .setColor(Colors.Red)
-                        .setFooter({ text: "Guardsman Moderation"})
+                        .setFooter({ text: "Guardsman Moderation", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png" })
                         .setTimestamp()
                         .addFields(
                             {
