@@ -1,5 +1,5 @@
 import { AxiosResponse } from "axios";
-import { ChatInputCommandInteraction, Colors, EmbedBuilder, SlashCommandIntegerOption, SlashCommandStringOption } from "discord.js";
+import { ChatInputCommandInteraction, Colors, EmbedBuilder, SlashCommandStringOption } from "discord.js";
 import { Guardsman } from "index";
 
 export default class CrossUnbanSubcommand implements ICommand
@@ -42,13 +42,13 @@ export default class CrossUnbanSubcommand implements ICommand
                         .setTitle("Guardsman API")
                         .setDescription("You do not have permission to `moderate:moderate`.")
                         .setColor(Colors.Red)
-                        .setFooter({ text: "Guardsman API" })
+                        .setFooter({ text: "Guardsman API", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png" })
                         .setTimestamp()
                 ]
             });
 
             return;
-        };
+        }
 
         let userData: any;
 
@@ -86,9 +86,9 @@ export default class CrossUnbanSubcommand implements ICommand
                 embeds: [
                     new EmbedBuilder()
                         .setTitle("Guardsman Moderation")
-                        .setDescription("You have been **unbanned** from ALL Guardsman-controlled guilds.")
+                        .setDescription("You have been **unbanned** from ALL Guardsman-controlled guilds. Please rejoin the main HS server [here](https://discord.gg/ctbKj67f2Q).")
                         .setColor(Colors.Red)
-                        .setFooter({ text: "Guardsman Moderation"})
+                        .setFooter({ text: "Guardsman Moderation", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png" })
                         .setTimestamp()
                         .addFields(
                             {
@@ -107,7 +107,7 @@ export default class CrossUnbanSubcommand implements ICommand
                         .setTitle("Guardsman Moderation")
                         .setDescription(`Failed to send ban DM. ${error}`)
                         .setColor(Colors.Orange)
-                        .setFooter({ text: "Guardsman API" })
+                        .setFooter({ text: "Guardsman API", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png" })
                         .setTimestamp()
                 ]
             });
@@ -133,7 +133,7 @@ export default class CrossUnbanSubcommand implements ICommand
                     .setTitle("Guardsman Moderation")
                     .setDescription(`<@${discordId}> (${discordId}) has been unbanned from across all Guardsman-controlled guilds.`)
                     .setColor(Colors.Red)
-                    .setFooter({ text: "Guardsman Moderation"})
+                    .setFooter({ text: "Guardsman Moderation", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png" })
                     .setTimestamp()
                     .addFields(
                         {

@@ -1,5 +1,5 @@
 import { AxiosResponse } from "axios";
-import { ChatInputCommandInteraction, Colors, EmbedBuilder, SlashCommandIntegerOption, SlashCommandStringOption } from "discord.js";
+import { ChatInputCommandInteraction, Colors, EmbedBuilder, SlashCommandStringOption } from "discord.js";
 import { Guardsman } from "index";
 
 export default class CrossBanCommand implements ICommand 
@@ -48,7 +48,7 @@ export default class CrossBanCommand implements ICommand
             });
 
             return;
-        };
+        }
 
         let userData: any;
 
@@ -86,9 +86,9 @@ export default class CrossBanCommand implements ICommand
                 embeds: [
                     new EmbedBuilder()
                         .setTitle("Guardsman Moderation")
-                        .setDescription("You have been **globally banned** from ALL Guardsman-controlled guilds.")
+                        .setDescription("You have been banned from __ALL__ Guardsman-controlled guilds. You may appeal into the appeals server. [HSAC Invite](https://discord.gg/vm4dMNmA)")
                         .setColor(Colors.Red)
-                        .setFooter({ text: "Guardsman Moderation"})
+                        .setFooter({ text: "Guardsman Moderation", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png" })
                         .setTimestamp()
                         .addFields(
                             {
@@ -107,7 +107,7 @@ export default class CrossBanCommand implements ICommand
                         .setTitle("Guardsman Moderation")
                         .setDescription(`Failed to send ban DM. ${error}`)
                         .setColor(Colors.Orange)
-                        .setFooter({ text: "Guardsman API" })
+                        .setFooter({ text: "Guardsman API", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png" })
                         .setTimestamp()
                 ]
             });
@@ -117,6 +117,7 @@ export default class CrossBanCommand implements ICommand
         const errors = [];
         for (const guild of guilds) 
         {
+            if (guild.id === "1089219999291428994") continue;
             try 
             {
                 await guild.bans.create(discordId, {
@@ -135,7 +136,7 @@ export default class CrossBanCommand implements ICommand
                         .setTitle("Guardsman Moderation")
                         .setDescription(`<@${discordId}> (${discordId}) has been banned across all Guardsman-controlled guilds..`)
                         .setColor(Colors.Red)
-                        .setFooter({ text: "Guardsman Moderation"})
+                        .setFooter({ text: "Guardsman Moderation", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png" })
                         .setTimestamp()
                         .addFields(
                             {

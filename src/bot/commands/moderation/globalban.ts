@@ -49,13 +49,13 @@ export default class GlobalBanCommand implements ICommand
                         .setTitle("Guardsman API")
                         .setDescription("You do not have permission to `moderate:moderate`")
                         .setColor(Colors.Red)
-                        .setFooter({ text: "Guardsman API" })
+                        .setFooter({ text: "Guardsman API", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png" })
                         .setTimestamp()
                 ]
             });
 
             return;
-        };
+        }
 
         let userData: AxiosResponse<IAPIUser>;
 
@@ -71,7 +71,7 @@ export default class GlobalBanCommand implements ICommand
                         .setTitle("Guardsman API Error")
                         .setDescription(`An error occurred whilst communicating with the Guardsman API. ${error}`)
                         .setColor(Colors.Red)
-                        .setFooter({ text: "Guardsman API" })
+                        .setFooter({ text: "Guardsman API", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png" })
                         .setTimestamp()
                 ]
             })
@@ -88,7 +88,7 @@ export default class GlobalBanCommand implements ICommand
                         .setTitle("Guardsman Moderation")
                         .setDescription(`Your permission level is not high enough to global ban ${userData.data.username}. (${executingPosition}=>${userData.data.position})`)
                         .setColor(Colors.Red)
-                        .setFooter({ text: "Guardsman API" })
+                        .setFooter({ text: "Guardsman API", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png" })
                         .setTimestamp()
                 ]
             })
@@ -103,7 +103,7 @@ export default class GlobalBanCommand implements ICommand
                         .setTitle("Guardsman Moderation")
                         .setDescription("You cannot ban a user in the past.")
                         .setColor(Colors.Red)
-                        .setFooter({ text: "Guardsman Moderation" })
+                        .setFooter({ text: "Guardsman Moderation", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png" })
                         .setTimestamp()
                 ]
             });
@@ -129,9 +129,9 @@ export default class GlobalBanCommand implements ICommand
                 embeds: [
                     new EmbedBuilder()
                         .setTitle("Guardsman Moderation")
-                        .setDescription("You have been **globally banned** from ALL Guardsman-controlled guilds, and ALL Guardsman-controlled experiences.")
+                        .setDescription("You have been **globally banned** from ALL Guardsman-controlled guilds and ALL Guardsman-controlled experiences. You may appeal into the appeals server. [HSAC Invite](https://discord.gg/vm4dMNmA) ")
                         .setColor(Colors.Red)
-                        .setFooter({ text: "Guardsman Moderation"})
+                        .setFooter({ text: "Guardsman Moderation", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png" })
                         .setTimestamp()
                         .addFields(
                             {
@@ -160,7 +160,7 @@ export default class GlobalBanCommand implements ICommand
                         .setTitle("Guardsman Moderation")
                         .setDescription(`Failed to send ban DM. ${error}`)
                         .setColor(Colors.Orange)
-                        .setFooter({ text: "Guardsman API" })
+                        .setFooter({ text: "Guardsman API", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png" })
                         .setTimestamp()
                 ]
             });
@@ -170,6 +170,7 @@ export default class GlobalBanCommand implements ICommand
         const errors = [];
         for (const guild of guilds) 
         {
+            if (guild.id === "1089219999291428994") continue;
             try 
             {
                 await guild.bans.create(userData.data.discord_id, {
@@ -188,7 +189,7 @@ export default class GlobalBanCommand implements ICommand
                         .setTitle("Guardsman Moderation")
                         .setDescription(`${userData.data.username} has been globally banned from all Guardsman-controlled guilds and experiences.`)
                         .setColor(Colors.Red)
-                        .setFooter({ text: "Guardsman Moderation"})
+                        .setFooter({ text: "Guardsman Moderation", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png" })
                         .setTimestamp()
                         .addFields(
                             {

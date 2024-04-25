@@ -3,7 +3,6 @@ import {
     Colors,
     EmbedBuilder,
     PermissionFlagsBits,
-    SlashCommandMentionableOption,
     SlashCommandStringOption,
     SlashCommandUserOption
 } from "discord.js";
@@ -48,7 +47,7 @@ export default class BanCommand implements ICommand
                         .setTitle("Guardsman Moderation")
                         .setDescription("No user was found.")
                         .setColor(Colors.Red)
-                        .setFooter({ text: "Guardsman Moderation" })
+                        .setFooter({ text: "Guardsman Moderation", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png" })
                         .setTimestamp()
                 ]
             });
@@ -92,7 +91,7 @@ export default class BanCommand implements ICommand
                         .setTitle("Guardsman Moderation")
                         .setDescription(`Failed to send unban DM. ${error}`)
                         .setColor(Colors.Orange)
-                        .setFooter({ text: "Guardsman API" })
+                        .setFooter({ text: "Guardsman API", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png" })
                         .setTimestamp()
                 ]
             });
@@ -110,7 +109,7 @@ export default class BanCommand implements ICommand
                         .setTitle("Guardsman Moderation")
                         .setDescription(`Failed to unban <@${member.id}>. ${error}`)
                         .setColor(Colors.Red)
-                        .setFooter({ text: "Guardsman Moderation" })
+                        .setFooter({ text: "Guardsman Moderation", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png" })
                         .setTimestamp()
                 ]
             });
@@ -124,7 +123,7 @@ export default class BanCommand implements ICommand
                     .setTitle("Guardsman Moderation")
                     .setDescription(`${member.username} has been unbanned from the guild.`)
                     .setColor(Colors.Red)
-                    .setFooter({ text: "Guardsman Moderation"})
+                    .setFooter({ text: "Guardsman Moderation", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png" })
                     .setTimestamp()
                     .addFields(
                         {
