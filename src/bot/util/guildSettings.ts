@@ -13,6 +13,9 @@ const defaultSettings = {
     autoUpdateOnVerification: false,
     changeNicknameToRobloxName: true,
 
+    // PerGuild
+    globalBanExcluded: false,
+
 }
 
 async function getSetting(guardsman: Guardsman, guild: Guild, name: keyof typeof defaultSettings): Promise<boolean | string | number> {

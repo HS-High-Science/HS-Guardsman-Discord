@@ -10,7 +10,7 @@
     "dev": "node --loader ts-node/esm src/index.ts",
     "start": "npm run build && node build/src/index.js"
   },
-  "author": "",
+  "author": "Bunker Bravo Interactive",
   "license": "ISC",
   "dependencies": {
     "@discord-player/extractor": "^4.4.5",
