@@ -15,6 +15,7 @@ compile:
       - node_modules
   only:
     - master
+    - staging
     - merge_requests
 
 testrun:
