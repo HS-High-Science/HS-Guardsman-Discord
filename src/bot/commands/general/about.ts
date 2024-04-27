@@ -1,6 +1,5 @@
 import { ChatInputCommandInteraction, EmbedBuilder, Colors } from "discord.js";
 import { Guardsman } from "index";
-import project from "../../../../package.json" assert { type: "json" };
 import os from "node:os";
 import child_process from "node:child_process";
 import moment from 'moment';
@@ -52,7 +51,7 @@ export default class AboutCommand implements ICommand {
                 },
                 {
                     name: "Build Stats",
-                    value: `\`\`\`yml\nGuardsman: v${project.version}\nBuild: ${gitHash}\n\`\`\``,
+                    value: `\`\`\`yml\nGuardsman: v1.0.0\nBuild: ${gitHash}\n\`\`\``,
                     inline: false,
                 },
             ])
