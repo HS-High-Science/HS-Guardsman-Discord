@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, Colors, EmbedBuilder, SlashCommandStringOption } from "discord.js";
 import { Guardsman } from "index";
-import { getSetting } from "../../util/guildSettings.js";
+import { getSetting } from "../../../util/guildSettings.js";
 
 export default class CrossBanCommand implements ICommand {
     name: Lowercase<string> = "cban";
@@ -44,7 +44,7 @@ export default class CrossBanCommand implements ICommand {
             });
 
             return;
-        };
+        }
 
         let userData: any;
 
