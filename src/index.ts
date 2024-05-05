@@ -36,8 +36,11 @@ class GuardsmanObject {
     api: API;
     bot: Bot;
 
+    assets: string;
+
     constructor() {
         this.log = new logger("Guardsman", this);
+        this.assets = `${dirname}/assets`;
 
         const argv = process.argv;
         if (argv.includes("--ci")) {
@@ -169,7 +172,7 @@ class GuardsmanObject {
     }
 
     configuration = {
-        getSettings: async (guildId: string): Promise<IGuildConfiguration | null> => {
+        getGuildSettings: async (guildId: string): Promise<IGuildConfiguration | null> => {
             let guildSettings: IGuildConfiguration;
 
             try {
@@ -182,7 +185,7 @@ class GuardsmanObject {
             return guildSettings;
         },
 
-        updateSetting: async (guildId: string, settings: {}): Promise<boolean> => {
+        pushGuildSettings: async (guildId: string, settings: {}): Promise<boolean> => {
             let guildSettingsStatus;
 
             try {

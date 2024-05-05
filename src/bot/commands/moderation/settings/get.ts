@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, Colors, EmbedBuilder, PermissionFlagsBits, SlashCommandStringOption, ApplicationCommandOptionBase, AutocompleteInteraction } from "discord.js";
 import { Guardsman } from "index";
-import { getSetting, defaultSettings } from "../../../util/guildSettings.js";
+import { getSettings, defaultSettings } from "../../../util/guildSettings.js";
 
 export default class SettingsGetCommand implements ICommand {
     name: Lowercase<string> = "get";
@@ -38,7 +38,7 @@ export default class SettingsGetCommand implements ICommand {
             return;
         }
 
-        const value = await getSetting(this.guardsman, interaction.guild, setting);
+        const value = await getSettings(this.guardsman, interaction.guild).then(settings => settings[setting]);
 
         const embed = new EmbedBuilder()
             .setColor(Colors.Green)
@@ -56,7 +56,7 @@ export default class SettingsGetCommand implements ICommand {
         const settings = Object.keys(defaultSettings).filter(setting => setting.includes(query));
 
         await interaction.respond(
-            settings.map(setting => ({ name: setting, value: setting }))
+            settings ? settings.map(setting => ({ name: setting, value: setting })).slice(0, 24) : []
         );
     }
 }

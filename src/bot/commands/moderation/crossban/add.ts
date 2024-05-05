@@ -1,16 +1,18 @@
-import { ChatInputCommandInteraction, Colors, EmbedBuilder, SlashCommandStringOption } from "discord.js";
+import { ChatInputCommandInteraction, Colors, EmbedBuilder, SlashCommandStringOption, SlashCommandUserOption } from "discord.js";
 import { Guardsman } from "index";
-import { getSetting } from "../../../util/guildSettings.js";
+import { getSettings } from "../../../util/guildSettings.js";
+import { addInfoToString } from "../../../util/string.js";
+
 
 export default class CrossBanCommand implements ICommand {
-    name: Lowercase<string> = "cban";
-    description: string = "Allows Guardsman moderators to cross ban a user from ALL Guardsman-controlled servers.";
+    name: Lowercase<string> = "add";
+    description: string = "Allows Guardsman moderators to cross ban a user from ALL Guardsman-controlled guilds.";
     guardsman: Guardsman;
 
     options = [
-        new SlashCommandStringOption()
-            .setName("id")
-            .setDescription("The Discord ID of the user to ban")
+        new SlashCommandUserOption()
+            .setName("user")
+            .setDescription("The Discord ID of the user to cross ban")
             .setRequired(true),
 
         new SlashCommandStringOption()
@@ -26,10 +28,11 @@ export default class CrossBanCommand implements ICommand {
     async execute(interaction: ChatInputCommandInteraction<"cached">): Promise<void> {
         await interaction.deferReply();
 
-        const discordId = interaction.options.getString("id", true);
+        const discordId = interaction.options.getUser("user", true).id;
         const banReason = interaction.options.getString("reason", false);
 
         const canGlobalBan = await this.guardsman.userbase.checkPermissionNode(interaction.user, "moderate:moderate");
+        const guildSettings = await getSettings(this.guardsman, interaction.guild);
 
         if (!canGlobalBan) {
             await interaction.editReply({
@@ -71,14 +74,14 @@ export default class CrossBanCommand implements ICommand {
 
         // send ban dm to user
         try {
-            const user = await this.guardsman.bot.users.cache.find(user => user.id === discordId);
+            const user = await this.guardsman.bot.users.cache.get(discordId);
             if (!user) throw new Error("User could not be messaged.");
 
             await user.send({
                 embeds: [
                     new EmbedBuilder()
                         .setTitle("Guardsman Moderation")
-                        .setDescription("You have been **globally banned** from ALL Guardsman-controlled guilds.")
+                        .setDescription(addInfoToString(guildSettings.crossBanMessage, { server: interaction.guild.name }))
                         .setColor(Colors.Red)
                         .setFooter({ text: "Guardsman Moderation" })
                         .setTimestamp()
@@ -108,7 +111,9 @@ export default class CrossBanCommand implements ICommand {
         const errors = [];
         for (const guild of guilds) {
             try {
-                if (await getSetting(this.guardsman, guild, "globalBanExcluded")) continue;
+                const guildSettings = await getSettings(this.guardsman, guild);
+                if (guildSettings.globalBanExcluded) continue;
+
                 await guild.bans.create(discordId, {
                     reason: (banReason || `No reason provided.`) + `; Executed by: ${interaction.member.user.username}`
                 });

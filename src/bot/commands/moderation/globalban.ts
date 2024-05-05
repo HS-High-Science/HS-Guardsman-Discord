@@ -1,7 +1,8 @@
 import { AxiosResponse } from "axios";
 import { ChatInputCommandInteraction, Colors, EmbedBuilder, SlashCommandIntegerOption, SlashCommandStringOption } from "discord.js";
 import { Guardsman } from "index";
-import { getSetting } from "../../util/guildSettings.js";
+import { getSettings } from "../../util/guildSettings.js";
+import { addInfoToString } from "../../util/string.js";
 
 export default class GlobalBanCommand implements ICommand {
     name: Lowercase<string> = "globalban";
@@ -38,6 +39,7 @@ export default class GlobalBanCommand implements ICommand {
 
         const moderatorId = await this.guardsman.userbase.getId(interaction.user);
         const canGlobalBan = await this.guardsman.userbase.checkPermissionNode(interaction.user, "moderate:moderate");
+        const guildSettings = await getSettings(this.guardsman, interaction.guild);
 
         if (!canGlobalBan) {
             await interaction.editReply({
@@ -122,7 +124,7 @@ export default class GlobalBanCommand implements ICommand {
                 embeds: [
                     new EmbedBuilder()
                         .setTitle("Guardsman Moderation")
-                        .setDescription("You have been **globally banned** from ALL Guardsman-controlled guilds, and ALL Guardsman-controlled experiences.")
+                        .setDescription(addInfoToString(guildSettings.globalBanMessage, { server: interaction.guild.name }))
                         .setColor(Colors.Red)
                         .setFooter({ text: "Guardsman Moderation" })
                         .setTimestamp()
@@ -162,7 +164,9 @@ export default class GlobalBanCommand implements ICommand {
         const errors = [];
         for (const guild of guilds) {
             try {
-                if (await getSetting(this.guardsman, guild, "globalBanExcluded")) continue;
+                const guildSettings = await getSettings(this.guardsman, guild);
+                if (guildSettings.globalBanExcluded) continue;
+
                 await guild.bans.create(userData.data.discord_id, {
                     reason: (banReason || `No reason provided.`) + `; Executed by: ${interaction.member.user.username}`
                 });

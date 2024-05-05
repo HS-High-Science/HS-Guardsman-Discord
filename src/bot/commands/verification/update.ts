@@ -1,7 +1,7 @@
 import { ChatInputCommandInteraction, Colors, EmbedBuilder } from "discord.js";
 import { Guardsman } from "index";
 import { updateUser } from "../../util/user.js"
-import { getSetting } from "../../util/guildSettings.js";
+import { getSettings } from "../../util/guildSettings.js";
 
 export default class UpdateCommand implements ICommand {
     name: Lowercase<string> = "update";
@@ -18,8 +18,9 @@ export default class UpdateCommand implements ICommand {
         const member = interaction.member;
         const guild = interaction.guild;
 
-        const updatingAllowed = await getSetting(this.guardsman, guild, "allowUpdating");
-        if (!updatingAllowed) {
+        const guildSettings = await getSettings(this.guardsman, guild);
+
+        if (!guildSettings.allowUpdating) {
             await interaction.reply({
                 embeds: [
                     new EmbedBuilder()
