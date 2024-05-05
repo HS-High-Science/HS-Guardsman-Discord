@@ -1,6 +1,6 @@
 import { AutocompleteInteraction, ChatInputCommandInteraction, Colors, EmbedBuilder, SlashCommandStringOption } from "discord.js";
 import { Guardsman } from "index";
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 
 interface IRobloxUser {
     previousUsernames: string[],
@@ -14,8 +14,7 @@ interface IUserSearchResponse {
     data: IRobloxUser[]
 }
 
-export default class FindUserCommand implements ICommand 
-{
+export default class FindUserCommand implements ICommand {
     name: Lowercase<string> = "finduser";
     description: string = "Allows guild moderators to search for a user's ROBLOX profile";
     guardsman: Guardsman;
@@ -28,13 +27,11 @@ export default class FindUserCommand implements ICommand
             .setAutocomplete(true)
     ]
 
-    constructor(guardsman: Guardsman) 
-    {
+    constructor(guardsman: Guardsman) {
         this.guardsman = guardsman;
     }
 
-    async execute(interaction: ChatInputCommandInteraction<"cached">): Promise<void>
-    {
+    async execute(interaction: ChatInputCommandInteraction<"cached">): Promise<void> {
         await interaction.deferReply();
 
         const query = interaction.options.getString("username", true);
@@ -42,14 +39,17 @@ export default class FindUserCommand implements ICommand
         await axios.post<IUserSearchResponse>(`https://users.roblox.com/v1/usernames/users/`, {
             usernames: [query],
             excludeBannedUsers: false
-        }, 
-        {
-            headers: {
-                Cookie: `.ROBLOSECURITY=${this.guardsman.environment.ROBLOX_COOKIE}`
-            }
-        })
+        },
+            {
+                headers: {
+                    Cookie: `.ROBLOSECURITY=${this.guardsman.environment.ROBLOX_COOKIE}`
+                }
+            })
             .then(async response => {
                 const user = response.data.data[0];
+
+                const Headshot = await this.guardsman.roblox.getPlayerThumbnail(user.id, "420x420", "png", false, "headshot").then(Headshot => Headshot[0].imageUrl + ".png");
+
                 await interaction.editReply({
                     embeds: [
                         new EmbedBuilder()
@@ -57,6 +57,7 @@ export default class FindUserCommand implements ICommand
                             .setColor(Colors.Green)
                             .setFooter({ text: "Guardsman Database" })
                             .setTimestamp()
+                            .setThumbnail(Headshot)
                             .addFields(
                                 {
                                     name: "Username",
