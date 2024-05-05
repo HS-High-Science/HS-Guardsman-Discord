@@ -10,9 +10,6 @@ compile:
     - npm ci
     - cp .env.example .env
     - npm run build
-  artifacts:
-    paths:
-      - node_modules
   only:
     - master
     - merge_requests
@@ -20,6 +17,7 @@ compile:
 testrun:
   stage: run
   script:
+    - npm ci
     - npm run ci --if-present
   artifacts:
     paths:
