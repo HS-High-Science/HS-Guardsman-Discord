@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, Colors, EmbedBuilder, PermissionFlagsBits, SlashCommandStringOption, ApplicationCommandOptionBase, AutocompleteInteraction } from "discord.js";
-import { Guardsman } from "index";
 import { updateSetting, defaultSettings } from "../../../util/guildSettings.js";
+import { Guardsman } from "index";
 
 async function invalidValueTemplate(interaction: ChatInputCommandInteraction<"cached">, type: string, value: string) {
     await interaction.reply({
@@ -30,8 +30,8 @@ export default class SettingsUpdateCommand implements ICommand {
 
         new SlashCommandStringOption()
             .setName("value")
-            .setDescription("Value to set the setting to")
-            .setRequired(true)
+            .setDescription("Value to set the setting to, if no value is given it will return to default.")
+            .setRequired(false)
             .setAutocomplete(true),
     ]
 
@@ -41,7 +41,7 @@ export default class SettingsUpdateCommand implements ICommand {
 
     async execute(interaction: ChatInputCommandInteraction<"cached">): Promise<void> {
         const setting = interaction.options.getString("setting", true) as keyof typeof defaultSettings;
-        const value = interaction.options.getString("value", true);
+        const value = interaction.options.getString("value", false);
 
         if (defaultSettings[setting] === undefined) {
             await interaction.reply({
@@ -59,36 +59,40 @@ export default class SettingsUpdateCommand implements ICommand {
         }
 
         let cleanedValue: string | number | boolean;
-        switch (typeof defaultSettings[setting]) {
-            case "string":
-                if (typeof value !== "string") {
-                    await invalidValueTemplate(interaction, typeof defaultSettings[setting], value);
+        if (value) {
+            switch (typeof defaultSettings[setting]) {
+                case "string":
+                    if (typeof value !== "string") {
+                        await invalidValueTemplate(interaction, typeof defaultSettings[setting], value);
+                        return;
+                    }
+
+                    cleanedValue = value;
+
+                    break;
+                case "boolean":
+                    if (value.toLowerCase() !== "true" && value.toLowerCase() !== "false") {
+                        await invalidValueTemplate(interaction, typeof defaultSettings[setting], value);
+                        return;
+                    }
+
+                    cleanedValue = value.toLowerCase() === "true" ? true : false;
+
+                    break;
+                case "number":
+                    if (isNaN(Number(value))) {
+                        await invalidValueTemplate(interaction, typeof defaultSettings[setting], value);
+                        return;
+                    }
+
+                    cleanedValue = Number(value);
+
+                    break;
+                default:
                     return;
-                }
-
-                cleanedValue = value;
-
-                break;
-            case "boolean":
-                if (value.toLowerCase() !== "true" && value.toLowerCase() !== "false") {
-                    await invalidValueTemplate(interaction, typeof defaultSettings[setting], value);
-                    return;
-                }
-
-                cleanedValue = value.toLowerCase() === "true" ? true : false;
-
-                break;
-            case "number":
-                if (isNaN(Number(value))) {
-                    await invalidValueTemplate(interaction, typeof defaultSettings[setting], value);
-                    return;
-                }
-
-                cleanedValue = Number(value);
-
-                break;
-            default:
-                return;
+            }
+        } else {
+            cleanedValue = defaultSettings[setting];
         }
 
         await updateSetting(this.guardsman, interaction.guild, setting, cleanedValue);
@@ -96,7 +100,7 @@ export default class SettingsUpdateCommand implements ICommand {
         const embed = new EmbedBuilder()
             .setColor(Colors.Green)
             .setTitle(`Guardsman Setting - ${setting}`)
-            .setDescription(`The value of the setting \`${setting}\` has been updated to \`${value}\`.`)
+            .setDescription(`The value of the setting \`${setting}\` has been updated to \`${cleanedValue}\`.`)
             .setFooter({ text: "Guardsman Settings" })
             .setTimestamp();
 
@@ -135,7 +139,7 @@ export default class SettingsUpdateCommand implements ICommand {
         }
 
         await interaction.respond(
-            choices ? choices.map(choice => ({ name: choice, value: choice })) : []
+            choices ? choices.map(choice => ({ name: choice, value: choice })).slice(0, 24) : []
         );
     }
 }

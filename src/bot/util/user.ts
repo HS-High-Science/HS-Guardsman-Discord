@@ -1,7 +1,7 @@
 import { Guild, GuildMember } from "discord.js";
 import { Guardsman } from "../../index.js";
 import axios from "axios";
-import { getSetting } from "./guildSettings.js";
+import { getSettings } from "./guildSettings.js";
 
 async function updateUser(guardsman: Guardsman, guild: Guild, member: GuildMember, existingUserData: IUser) {
     const verificationBinds = await guardsman.database<IRoleBind>("verification_binds")
@@ -14,11 +14,11 @@ async function updateUser(guardsman: Guardsman, guild: Guild, member: GuildMembe
     const errors: string[] = [];
 
     // nuke users roles for their account age if too low
-    const ageSetting = await getSetting(guardsman, guild, "accountAge");
+    const guildSettings = await getSettings(guardsman, guild);
     const accountAge = (await guardsman.roblox.getPlayerInfo(parseInt(existingUserData.roblox_id))).age;
 
     if (accountAge !== undefined) {
-        if (new Date().getTime() < new Date(accountAge).getTime() + ((ageSetting as number) * 24 * 60 * 60 * 1000)) {
+        if (new Date().getTime() < new Date(accountAge).getTime() + ((guildSettings.accountAge) * 24 * 60 * 60 * 1000)) {
             const roles = member.roles.cache.filter(role => verificationBinds.find(r => r.role_id == role.id) != null);
 
             for (const role of roles) {
@@ -32,7 +32,7 @@ async function updateUser(guardsman: Guardsman, guild: Guild, member: GuildMembe
 
             await member.roles.remove(roles);
 
-            return { addedRoles, removedRoles, errors, extra: `Your roblox account is too young to join this guild! Minimum: \`${ageSetting}\` days.` };
+            return { addedRoles, removedRoles, errors, extra: `Your roblox account is too young to join this guild! Minimum: \`${guildSettings.accountAge}\` days.` };
         }
     }
 
@@ -98,6 +98,23 @@ async function updateUser(guardsman: Guardsman, guild: Guild, member: GuildMembe
                     }
 
                     if (userOwnsGamepass) {
+                        allowedRoles.push(verificationBind);
+                    }
+
+                    break;
+                case "badge":
+                    const badgeId = bindData.badgeId;
+                    let userOwnsBadge = false;
+
+                    try {
+                        const apiUrl = `https://badges.roblox.com/v1/users/${existingUserData.roblox_id}/badges/awarded-dates?badgeIds=${badgeId}`
+                        const returnedApiData = await axios.get(apiUrl);
+                        userOwnsBadge = returnedApiData.data.data.length > 0;
+                    } catch (error: any) {
+                        errors.push(error);
+                    }
+
+                    if (userOwnsBadge) {
                         allowedRoles.push(verificationBind);
                     }
 
@@ -187,8 +204,7 @@ async function updateUser(guardsman: Guardsman, guild: Guild, member: GuildMembe
 
     // Set nickname
     try {
-        const setRobloxUsername = await getSetting(guardsman, guild, "changeNicknameToRobloxName");
-        if (setRobloxUsername) {
+        if (guildSettings.changeNicknameToRobloxName) {
             await member.setNickname(existingUserData.username);
         }
     } catch (error) {

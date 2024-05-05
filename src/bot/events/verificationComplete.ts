@@ -1,15 +1,15 @@
-import { Colors, EmbedBuilder } from "discord.js";
 import { Guardsman } from "index";
 import { updateUser } from "../util/user.js";
-import { getSetting } from "../util/guildSettings.js";
+import { Colors, EmbedBuilder } from "discord.js";
+import { getSettings } from "../util/guildSettings.js";
 
 export default async (guardsman: Guardsman, discordId: string) => {
     const interaction = guardsman.bot.pendingVerificationInteractions[discordId];
 
-    const autoUpdateOnVerification = await getSetting(guardsman, interaction.guild, "autoUpdateOnVerification");
+    const guildSettings = await getSettings(guardsman, interaction.guild);
 
     try {
-        if (autoUpdateOnVerification) {
+        if (guildSettings.autoUpdateOnVerification) {
             const userInGuild = await interaction.guild.members.fetch(interaction.member.id).catch(() => null);
 
             const existingData = await guardsman.database<IUser>("users")

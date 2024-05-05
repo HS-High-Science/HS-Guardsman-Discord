@@ -1,22 +1,16 @@
-import {
-    ChatInputCommandInteraction,
-    Colors,
-    EmbedBuilder,
-    PermissionFlagsBits,
-    SlashCommandStringOption,
-    SlashCommandUserOption
-} from "discord.js";
+import { ChatInputCommandInteraction, Colors, EmbedBuilder, PermissionFlagsBits, SlashCommandMentionableOption, SlashCommandStringOption } from "discord.js";
+import { getSettings } from "../../util/guildSettings.js";
+import { addInfoToString } from "../../util/string.js";
 import { Guardsman } from "index";
 
-export default class KickCommand implements ICommand 
-{
+export default class KickCommand implements ICommand {
     name: Lowercase<string> = "kick";
     description: string = "Allows Guild moderators to kick a user from this guild.";
     guardsman: Guardsman;
     defaultMemberPermissions?: string | number | bigint | null | undefined = PermissionFlagsBits.KickMembers;
 
     options = [
-        new SlashCommandUserOption()
+        new SlashCommandMentionableOption()
             .setName("user")
             .setDescription("The user to kick (To find, run /searchuser)")
             .setRequired(true),
@@ -27,20 +21,19 @@ export default class KickCommand implements ICommand
             .setRequired(false),
     ]
 
-    constructor(guardsman: Guardsman) 
-    {
+    constructor(guardsman: Guardsman) {
         this.guardsman = guardsman;
     }
 
-    async execute(interaction: ChatInputCommandInteraction<"cached">): Promise<void>
-    {
+    async execute(interaction: ChatInputCommandInteraction<"cached">): Promise<void> {
         await interaction.deferReply();
 
-        const kickReason = interaction.options.getString("reason", false);
+        const kickReason = interaction.options.getString("reason") || "No Reason Provided";
         const member = interaction.options.getMember("user");
 
-        if (!member) 
-        {
+        const guildSettings = await getSettings(this.guardsman, interaction.guild);
+
+        if (!member) {
             await interaction.editReply({
                 embeds: [
                     new EmbedBuilder()
@@ -56,31 +49,28 @@ export default class KickCommand implements ICommand
         }
 
         // send kick dm to user
-        try 
-        {
-            const user = await this.guardsman.bot.users.cache.find(user => user.id === member.id);
+        try {
+            const user = this.guardsman.bot.users.cache.get(member.id);
             if (!user) throw new Error("User could not be messaged.");
 
             await user.send({
                 embeds: [
                     new EmbedBuilder()
                         .setTitle("Guardsman Moderation")
-                        .setThumbnail(`${interaction.guild.iconURL()}`)
-                        .setDescription(`You have been **kicked** from ${interaction.guild.name}.`)
+                        .setDescription(addInfoToString(guildSettings.kickMessage, { server: interaction.guild.name }))
                         .setColor(Colors.Red)
-                        .setFooter({ text: "Guardsman Moderation", iconURL: "https://cdn.astrohweston.xyz/u/mej89O.png" })
+                        .setFooter({ text: "Guardsman Moderation" })
                         .setTimestamp()
                         .addFields(
                             {
                                 name: "Reason",
-                                value: kickReason || "No Reason Provided"
+                                value: kickReason
                             }
                         )
                 ]
             })
-        } 
-        catch (error) 
-        {
+        }
+        catch (error) {
             await interaction.channel?.send({
                 embeds: [
                     new EmbedBuilder()
@@ -93,12 +83,10 @@ export default class KickCommand implements ICommand
             });
         }
 
-        try 
-        {
-            await member.kick((kickReason || `No reason provided.`) + `; Executed by: ${interaction.member.user.username}`)
-        } 
-        catch (error) 
-        {
+        try {
+            await member.kick((kickReason) + `; Executed by: ${interaction.member.user.username}`)
+        }
+        catch (error) {
             await interaction.editReply({
                 embeds: [
                     new EmbedBuilder()
@@ -116,17 +104,17 @@ export default class KickCommand implements ICommand
         await interaction.editReply({
             embeds: [
                 new EmbedBuilder()
-                        .setTitle("Guardsman Moderation")
-                        .setDescription(`${member.user.username} has been kicked from the guild.`)
-                        .setColor(Colors.Red)
-                        .setFooter({ text: "Guardsman Moderation"})
-                        .setTimestamp()
-                        .addFields(
-                            {
-                                name: "Reason",
-                                value: kickReason || "No Reason Provided"
-                            }
-                        )
+                    .setTitle("Guardsman Moderation")
+                    .setDescription(`${member.user.username} has been kicked from the guild.`)
+                    .setColor(Colors.Green)
+                    .setFooter({ text: "Guardsman Moderation" })
+                    .setTimestamp()
+                    .addFields(
+                        {
+                            name: "Reason",
+                            value: kickReason
+                        }
+                    )
             ]
         })
     }

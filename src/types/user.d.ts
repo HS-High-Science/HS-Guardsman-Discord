@@ -1,5 +1,4 @@
-declare interface IUser
-{
+declare interface IUser {
     id?: number
     username: string
     roblox_id: string
@@ -11,8 +10,7 @@ declare interface IUser
     updated_at?: Date
 }
 
-declare interface IAPIUser
-{
+declare interface IAPIUser {
     id: number
     username: string
     roblox_id: string
@@ -28,21 +26,18 @@ declare interface IAPIUser
     updated_at?: Date
 }
 
-declare interface IRole
-{
+declare interface IRole {
     name: string
     position: number
     permissions: string
 }
 
-declare interface IVerificationConfirmation
-{
+declare interface IVerificationConfirmation {
     discord_id: string
     token: string
 }
 
-declare interface IRoleBind
-{
+declare interface IRoleBind {
     id: number,
     guild_id: string,
     role_id: string,
@@ -50,40 +45,45 @@ declare interface IRoleBind
 }
 
 declare type RoleDataGroupBind =
-{
-    groupId?: number
-    minRank?: number,
-    maxRank?: number,
-}
+    {
+        groupId?: number
+        minRank?: number,
+        maxRank?: number,
+    }
 
 declare type RoleDataUserBind =
-{
-    userId?: string
-}
+    {
+        userId?: string
+    }
 
 declare type RoleDataGamePassBind =
-{
-    gamepassId?: number
-}
+    {
+        gamepassId?: number
+    }
+
+declare type RoleDataBadgeBind =
+    {
+        badgeId?: number
+    }
 
 declare type RoleData<T> =
-{
-    type: string
-} & T
+    {
+        type: string
+    } & T
 
 declare type Userdata =
-{
-    user_id: string,
-    in_squadron: number,
-    events_attended: number,
-    squadron_events_attended: number,
-    squadron_last_promoted?: Date,
-    squadron_medals: string,
-    squadron_loa_start_date?: Date,
-}
+    {
+        user_id: string,
+        in_squadron: number,
+        events_attended: number,
+        squadron_events_attended: number,
+        squadron_last_promoted?: Date,
+        squadron_medals: string,
+        squadron_loa_start_date?: Date,
+    }
 
 declare type StoredUserdata =
-{
-    created_at: Date,
-    updated_at: Date
-} & Userdata
+    {
+        created_at: Date,
+        updated_at: Date
+    } & Userdata
