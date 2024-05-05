@@ -1,22 +1,20 @@
 import { Colors, EmbedBuilder, Interaction } from "discord.js";
 import { Guardsman } from "index";
 
-export default async (guardsman: Guardsman, interaction: Interaction<"cached">) =>
-{
-    if (interaction.isChatInputCommand())
-    {
+export default async (guardsman: Guardsman, interaction: Interaction<"cached">) => {
+    if (!interaction.guild) return;
+
+    if (interaction.isChatInputCommand()) {
         const sentCommand = interaction.commandName;
         const options = interaction.options;
         let command: ICommand | undefined;
 
-        guardsman.bot.commands.list.find(category =>
-            {
-                command = category.find(com => com.name == sentCommand)
-                return command;
-            })
+        guardsman.bot.commands.list.find(category => {
+            command = category.find(com => com.name == sentCommand)
+            return command;
+        })
 
-        if (!command)
-        {
+        if (!command) {
             return interaction.reply({
                 embeds: [
                     new EmbedBuilder()
@@ -28,13 +26,11 @@ export default async (guardsman: Guardsman, interaction: Interaction<"cached">) 
         }
 
         const subCommand = options.getSubcommand(false);
-        if (subCommand)
-        {
+        if (subCommand) {
             command = command.subcommands?.find(subCom => subCom.name == subCommand);
         }
 
-        if (!command)
-        {
+        if (!command) {
             return interaction.reply({
                 embeds: [
                     new EmbedBuilder()
@@ -45,8 +41,7 @@ export default async (guardsman: Guardsman, interaction: Interaction<"cached">) 
             })
         }
 
-        if (command.developer && !guardsman.environment.DISCORD_BOT_OWNER_IDS.includes(interaction.user.id))
-        {
+        if (command.developer && !guardsman.environment.DISCORD_BOT_OWNER_IDS.includes(interaction.user.id)) {
             return interaction.reply({
                 embeds: [
                     new EmbedBuilder()
@@ -57,8 +52,7 @@ export default async (guardsman: Guardsman, interaction: Interaction<"cached">) 
             })
         }
 
-        if (typeof command.defaultMemberPermissions == "bigint" && !interaction.member.permissions.has(command.defaultMemberPermissions))
-        {
+        if (typeof command.defaultMemberPermissions == "bigint" && !interaction.member.permissions.has(command.defaultMemberPermissions)) {
             return interaction.reply({
                 embeds: [
                     new EmbedBuilder()
@@ -69,12 +63,10 @@ export default async (guardsman: Guardsman, interaction: Interaction<"cached">) 
             })
         }
 
-        try
-        {
+        try {
             await command.execute(interaction);
         }
-        catch (error)
-        {
+        catch (error) {
             const replied = interaction.replied || interaction.deferred;
             const replyData = {
                 embeds: [
@@ -85,33 +77,28 @@ export default async (guardsman: Guardsman, interaction: Interaction<"cached">) 
                 ]
             }
 
-            if (replied)
-            {
+            if (replied) {
                 return interaction.editReply(replyData)
             }
-            else
-            {
+            else {
                 return interaction.reply(replyData);
             }
         }
     }
-    else if (interaction.isAutocomplete()) 
-    {
+    else if (interaction.isAutocomplete()) {
         const sentCommand = interaction.commandName;
         const options = interaction.options;
         let command: ICommand | undefined;
 
-        guardsman.bot.commands.list.find(category =>
-            {
-                command = category.find(com => com.name == sentCommand)
-                return command;
-            })
+        guardsman.bot.commands.list.find(category => {
+            command = category.find(com => com.name == sentCommand)
+            return command;
+        })
 
         if (!command) return;
 
         const subCommand = options.getSubcommand(false);
-        if (subCommand)
-        {
+        if (subCommand) {
             command = command.subcommands?.find(subCom => subCom.name == subCommand);
         }
 

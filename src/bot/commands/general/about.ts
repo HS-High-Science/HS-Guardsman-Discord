@@ -41,7 +41,7 @@ export default class AboutCommand implements ICommand {
                 },
                 {
                     name: "Bot Stats",
-                    value: `\`\`\`yml\nGuilds: ${this.guardsman.bot.guilds.cache.size}\nUptime: ${formatDuration(this.guardsman.bot.uptime)}\nNodeJS: ${process.version}\`\`\``,
+                    value: `\`\`\`yml\nGuilds: ${this.guardsman.bot.guilds.cache.size}\nUptime: ${formatDuration(this.guardsman.bot.uptime)}\nNodeJS: ${process.version}\nMemory Usage: ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB\`\`\``,
                     inline: true,
                 },
                 {

@@ -2,8 +2,7 @@ import { AutocompleteInteraction, ChatInputCommandInteraction, Colors, EmbedBuil
 import { Guardsman } from "index";
 import { AxiosResponse } from "axios";
 
-export default class SearchUserCommand implements ICommand 
-{
+export default class SearchUserCommand implements ICommand {
     name: Lowercase<string> = "searchuser";
     description: string = "Allows guild moderators to search for a user's Guardsman data";
     guardsman: Guardsman;
@@ -16,19 +15,16 @@ export default class SearchUserCommand implements ICommand
             .setAutocomplete(true)
     ]
 
-    constructor(guardsman: Guardsman) 
-    {
+    constructor(guardsman: Guardsman) {
         this.guardsman = guardsman;
     }
 
-    async execute(interaction: ChatInputCommandInteraction<"cached">): Promise<void>
-    {
+    async execute(interaction: ChatInputCommandInteraction<"cached">): Promise<void> {
         await interaction.deferReply();
 
         const canGlobalBan = await this.guardsman.userbase.checkPermissionNode(interaction.user, "moderate:search");
 
-        if (!canGlobalBan) 
-        {
+        if (!canGlobalBan) {
             await interaction.editReply({
                 embeds: [
                     new EmbedBuilder()
@@ -44,15 +40,12 @@ export default class SearchUserCommand implements ICommand
         };
 
         const query = interaction.options.getString("query", true);
-        let userData: AxiosResponse<IUser>
-        // const userData: AxiosResponse<IUser> = await this.guardsman.bot.guardsmanAPI.get(`api/discord/user/${query}`);
+        let userData: AxiosResponse<IUser>;
 
-        try 
-        {
+        try {
             userData = await this.guardsman.backend.get(`discord/user/by-username/${query}`);
-        } 
-        catch (error) 
-        {
+        }
+        catch (error) {
             await interaction.editReply({
                 embeds: [
                     new EmbedBuilder()
@@ -63,9 +56,11 @@ export default class SearchUserCommand implements ICommand
                         .setTimestamp()
                 ]
             })
-            
+
             return;
         }
+
+        const Headshot = await this.guardsman.roblox.getPlayerThumbnail(Number(userData.data.roblox_id), "420x420", "png", false, "headshot").then(Headshot => Headshot[0].imageUrl + ".png");
 
         await interaction.editReply({
             embeds: [
@@ -74,6 +69,7 @@ export default class SearchUserCommand implements ICommand
                     .setColor(Colors.Green)
                     .setFooter({ text: "Guardsman Database" })
                     .setTimestamp()
+                    .setThumbnail(Headshot)
                     .addFields(
                         {
                             name: "Guardsman ID",
@@ -118,11 +114,11 @@ export default class SearchUserCommand implements ICommand
     async autocomplete(interaction: AutocompleteInteraction<"cached">): Promise<void> {
         const query = interaction.options.getString("query", true);
         if (query == "") return;
-        
+
         this.guardsman.backend.get(`discord/search/${query}`)
             .then(response => {
                 interaction.respond(response.data);
             })
-            .catch(error => {})
+            .catch(error => { })
     }
 }

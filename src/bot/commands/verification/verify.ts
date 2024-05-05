@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, Colors, EmbedBuilder } from "discord.js";
 import { Guardsman } from "index";
-import { getSetting } from "../../util/guildSettings.js";
+import { getSettings } from "../../util/guildSettings.js";
 
 export default class VerifyCommand implements ICommand {
     name: Lowercase<string> = "verify";
@@ -16,8 +16,9 @@ export default class VerifyCommand implements ICommand {
         const member = interaction.member;
         const channel = interaction.channel;
 
-        const verificationAllowed = await getSetting(this.guardsman, interaction.guild, "allowVerification");
-        if (!verificationAllowed) {
+        const guildSettings = await getSettings(this.guardsman, interaction.guild);
+
+        if (!guildSettings.allowVerification) {
             await interaction.reply({
                 embeds: [
                     new EmbedBuilder()
