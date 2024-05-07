@@ -1,23 +1,19 @@
 import { ChatInputCommandInteraction, Colors, EmbedBuilder } from "discord.js";
 import { Guardsman } from "index";
 
-export default class PauseCommand implements ICommand 
-{
+export default class ResumeCommand implements ICommand {
     name: Lowercase<string> = "resume";
     description: string = "Resumes the current song.";
     guardsman: Guardsman;
 
-    constructor(guardsman: Guardsman) 
-    {
+    constructor(guardsman: Guardsman) {
         this.guardsman = guardsman;
     }
 
-    async execute(interaction: ChatInputCommandInteraction<"cached">): Promise<void>
-    {
+    async execute(interaction: ChatInputCommandInteraction<"cached">): Promise<void> {
         await interaction.deferReply();
 
-        if (!interaction.member.voice.channel) 
-        {
+        if (!interaction.member.voice.channel) {
             await interaction.editReply({
                 content: "You must connect to a voice channel before running music commands!"
             });
@@ -28,8 +24,7 @@ export default class PauseCommand implements ICommand
         if (!interaction.channel) return;
 
         const queue = this.guardsman.bot.musicController.queues.get(interaction.guild);
-        if (!queue || !queue.currentTrack) 
-        {
+        if (!queue || !queue.currentTrack) {
             await interaction.editReply({
                 content: "The queue is empty!"
             });
@@ -37,15 +32,14 @@ export default class PauseCommand implements ICommand
             return;
         }
 
-        if (!queue.node.isPaused()) 
-        {
+        if (!queue.node.isPaused()) {
             await interaction.editReply({
                 embeds: [
                     new EmbedBuilder()
                         .setTitle("Guardsman Music")
                         .setDescription(`The queue is not paused!`)
                         .setColor(Colors.Blurple)
-                        .setFooter({ text: "Guardsman Discord" })
+                        .setFooter({ text: "Guardsman Music" })
                         .setTimestamp()
                 ]
             });
@@ -61,7 +55,7 @@ export default class PauseCommand implements ICommand
                     .setTitle("Guardsman Music")
                     .setDescription(`Successfully ${queue.node.isPaused() && "paused" || "unpaused"} the current song!`)
                     .setColor(Colors.Blurple)
-                    .setFooter({ text: "Guardsman Discord" })
+                    .setFooter({ text: "Guardsman Music" })
                     .setTimestamp()
             ]
         });
