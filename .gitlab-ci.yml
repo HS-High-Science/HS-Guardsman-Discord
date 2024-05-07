@@ -1,4 +1,10 @@
-image: node:20
+image: node:latest
+
+default:
+  before_script:
+  - corepack enable
+  - corepack prepare pnpm@latest-9 --activate
+  - pnpm config set store-dir .pnpm-store
 
 stages:
   - build
@@ -7,9 +13,12 @@ stages:
 compile:
   stage: build
   script:
-    - npm ci
+    - pnpm install
     - cp .env.example .env
-    - npm run build
+    - pnpm run build
+  artifacts:
+    paths:
+      - node_modules
   only:
     - master
     - merge_requests
@@ -17,11 +26,7 @@ compile:
 testrun:
   stage: run
   script:
-    - npm ci
-    - npm run ci --if-present
-  artifacts:
-    paths:
-      - node_modules
+    - pnpm run ci --if-present
   only:
     - master
     - merge_requests
