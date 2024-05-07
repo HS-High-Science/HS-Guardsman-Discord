@@ -3,7 +3,7 @@ import { updateUser } from "../util/user.js"
 import { addInfoToString } from "../util/string.js";
 import { GuildMember, TextChannel } from "discord.js";
 import { getSettings } from "../util/guildSettings.js";
-import { createCanvas, loadImage, registerFont } from "canvas";
+import { createCanvas, loadImage, GlobalFonts } from "@napi-rs/canvas";
 
 export default async (guardsman: Guardsman, member: GuildMember) => {
     const guild = member.guild;
@@ -19,7 +19,7 @@ export default async (guardsman: Guardsman, member: GuildMember) => {
                     const canvas = createCanvas(1600, 400);
                     const ctx = canvas.getContext("2d");
 
-                    registerFont(`${guardsman.assets}/fonts/RobotoRegular.ttf`, { family: "Roboto" });
+                    GlobalFonts.registerFromPath(`${guardsman.assets}/fonts/RobotoRegular.ttf`, "Roboto");
 
                     const grad = ctx.createLinearGradient(0, 0, canvas.height, (canvas.width / 2));
                     grad.addColorStop(0, "#D4145A");

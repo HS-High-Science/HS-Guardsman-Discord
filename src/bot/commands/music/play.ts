@@ -1,9 +1,8 @@
 import { QueryType } from "discord-player";
-import { ChatInputCommandInteraction, Colors, EmbedBuilder, SlashCommandAttachmentOption, SlashCommandStringOption } from "discord.js";
+import { ChatInputCommandInteraction, Colors, EmbedBuilder, SlashCommandStringOption } from "discord.js";
 import { Guardsman } from "index";
 
-export default class PlayCommand implements ICommand 
-{
+export default class PlayCommand implements ICommand {
     name: Lowercase<string> = "play";
     description: string = "Adds provided song to the queue.";
     guardsman: Guardsman;
@@ -12,25 +11,17 @@ export default class PlayCommand implements ICommand
         new SlashCommandStringOption()
             .setName("url")
             .setDescription("The URL or query of the song")
-            .setRequired(false),
-        
-        new SlashCommandAttachmentOption()
-            .setName("attachment")
-            .setDescription("The song file top play")
-            .setRequired(false)
+            .setRequired(true),
     ]
 
-    constructor(guardsman: Guardsman) 
-    {
+    constructor(guardsman: Guardsman) {
         this.guardsman = guardsman;
     }
 
-    async execute(interaction: ChatInputCommandInteraction<"cached">): Promise<void>
-    {
+    async execute(interaction: ChatInputCommandInteraction<"cached">): Promise<void> {
         await interaction.deferReply();
 
-        if (!interaction.member.voice.channel) 
-        {
+        if (!interaction.member.voice.channel) {
             await interaction.editReply({
                 content: "You must connect to a voice channel before running music commands!"
             });
@@ -39,29 +30,43 @@ export default class PlayCommand implements ICommand
 
         }
 
-        const urlQuery = await interaction.options.getString("url");
-        const attachment = await interaction.options.getAttachment("attachment");
+        const urlQuery = interaction.options.getString("url", true);
 
-        if (!urlQuery && !attachment) 
-        {
-            await interaction.editReply({
-                content: "You must provide a URL or attachment to play!"
-            });
+        const queue = this.guardsman.bot.musicController.queues.create(interaction.guild);
+        if (!queue.connection) await queue.connect(interaction.member.voice.channel);
 
+        const results = await this.guardsman.bot.musicController.search(urlQuery, {
+            requestedBy: interaction.user,
+            searchEngine: QueryType.AUTO,
+        });
+
+        if (results.tracks.length === 0 && !results.playlist) {
+            await interaction.editReply("No tracks could be found. Check the query and try again.");
             return;
         }
 
-        const queue = await this.guardsman.bot.musicController.queues.create(interaction.guild);
-        if (!queue.connection) await queue.connect(interaction.member.voice.channel);
+        const track = results.tracks[0];
+        const playlist = results.playlist;
 
-        if (attachment) 
-        {
-            console.log(attachment.url);
+        if (playlist) {
+            for (const pTrack of playlist.tracks) {
+                queue.addTrack(pTrack);
+            }
 
-            const { track } = await queue.play(attachment.url, {
-                requestedBy: interaction.user
+            await interaction.editReply({
+                embeds: [
+                    new EmbedBuilder()
+                        .setTitle("Guardsman Music")
+                        .setDescription(`Successfully added ${playlist.tracks.length} tracks to the queue!`)
+                        .setColor(Colors.Blurple)
+                        .setThumbnail(track.thumbnail)
+                        .setFooter({ text: "Guardsman Music" })
+                        .setTimestamp()
+                ]
             });
-    
+        } else {
+            queue.addTrack(track);
+
             await interaction.editReply({
                 embeds: [
                     new EmbedBuilder()
@@ -69,61 +74,10 @@ export default class PlayCommand implements ICommand
                         .setDescription(`Successfully added \`${track.title} - ${track.author}\` to the queue!`)
                         .setColor(Colors.Blurple)
                         .setThumbnail(track.thumbnail)
-                        .setFooter({ text: "Guardsman Discord" })
+                        .setFooter({ text: "Guardsman Music" })
                         .setTimestamp()
                 ]
             });
-        }
-
-        if (urlQuery) 
-        {
-            const results = await this.guardsman.bot.musicController.search(urlQuery, {
-                requestedBy: interaction.user,
-                searchEngine: QueryType.AUTO,
-            });
-    
-            if (results.tracks.length === 0 && !results.playlist) 
-            {
-                await interaction.editReply("No tracks could be found. Check the query and try again.");
-                return;
-            }
-    
-            const track = results.tracks[0];
-            const playlist = results.playlist;
-            
-            if (playlist) 
-            {
-                for (const pTrack of playlist.tracks) 
-                {
-                    await queue.addTrack(pTrack);
-                }
-    
-                await interaction.editReply({
-                    embeds: [
-                        new EmbedBuilder()
-                            .setTitle("Guardsman Music")
-                            .setDescription(`Successfully added ${playlist.tracks.length} tracks to the queue!`)
-                            .setColor(Colors.Blurple)
-                            .setThumbnail(track.thumbnail)
-                            .setFooter({ text: "Guardsman Discord" })
-                            .setTimestamp()
-                    ]
-                });
-            } else {
-                await queue.addTrack(track);
-    
-                await interaction.editReply({
-                    embeds: [
-                        new EmbedBuilder()
-                            .setTitle("Guardsman Music")
-                            .setDescription(`Successfully added \`${track.title} - ${track.author}\` to the queue!`)
-                            .setColor(Colors.Blurple)
-                            .setThumbnail(track.thumbnail)
-                            .setFooter({ text: "Guardsman Discord" })
-                            .setTimestamp()
-                    ]
-                });
-            }
         }
 
         const firstTrack = queue.tracks.at(0);
