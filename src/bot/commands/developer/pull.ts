@@ -25,7 +25,7 @@ export default class PullCommand implements ICommand
     {
         await interaction.reply("Pulling latest changes from Gitlab...");
 
-        exec(`git pull https://AstroHWeston:glpat--fsTNLoToezKCaFGZxry@gitlab.astrohweston.xyz/high-science/guardsman-discord.git ${interaction.options.getString("branch")}`, async (error, stdout, stderr) =>
+        exec(`git pull https://AstroHWeston:glpat-pmdj4HymaPuSxnx6MMge@gitlab.astrohweston.xyz/high-science/guardsman-discord.git ${interaction.options.getString("branch")}`, async (error, stdout, stderr) =>
         {
             if (error)
             {
