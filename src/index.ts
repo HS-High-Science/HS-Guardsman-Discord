@@ -10,6 +10,7 @@ import url from "url";
 import axios, { AxiosInstance } from "axios";
 import { User } from "discord.js";
 import sentry from "@sentry/node";
+import trello from "./util/trello.js";
 const dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 export enum GuardsmanState {
@@ -22,7 +23,7 @@ export enum GuardsmanState {
 class GuardsmanObject {
     state: GuardsmanState = GuardsmanState.OFFLINE
     log;
-    // trello: trello;
+    trello?: trello;
     mainBoard?: Board;
     debug = process.argv.includes("--debug")
     environment = config().parsed || {};
@@ -59,13 +60,13 @@ class GuardsmanObject {
         this.log.info("Initializing Guardsman...");
         this.state = GuardsmanState.STARTING;
 
-        // this.trello = new trello(this.environment.TRELLO_APP_KEY, this.environment.TRELLO_TOKEN);
-        // if (!this.ci)
-        // {
-        //     this.trello.getBoard(this.environment.TRELLO_BOARD_ID).then(async board => {
-        //         this.mainBoard = board;
-        //     });
-        // }
+        if (this.environment.TRELLO_APP_KEY && this.environment.TRELLO_TOKEN && !this.ci)
+        {
+            this.trello = new trello(this.environment.TRELLO_APP_KEY, this.environment.TRELLO_TOKEN);
+            this.trello.getBoard(this.environment.TRELLO_BOARD_ID).then(async board => {
+                this.mainBoard = board;
+            });
+        }
 
         this.log.debug("Connecting to database...")
         this.database = knex({

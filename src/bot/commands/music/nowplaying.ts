@@ -3,7 +3,7 @@ import { classicCard } from "songcard";
 import { Guardsman } from "index";
 
 export default class NowPlayingCommand implements ICommand {
-    name: Lowercase<string> = "np";
+    name: Lowercase<string> = "nowplaying";
     description: string = "Shows the current song.";
     guardsman: Guardsman;
 
