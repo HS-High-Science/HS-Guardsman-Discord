@@ -1,7 +1,7 @@
 import { Guild, GuildMember } from "discord.js";
 import { Guardsman } from "../../index.js";
 import axios from "axios";
-import { getSettings } from "./guildSettings.js";
+import { getSettings } from "./guild/guildSettings.js";
 
 async function updateUser(guardsman: Guardsman, guild: Guild, member: GuildMember, existingUserData: IUser) {
     const verificationBinds = await guardsman.database<IRoleBind>("verification_binds")
@@ -204,8 +204,16 @@ async function updateUser(guardsman: Guardsman, guild: Guild, member: GuildMembe
 
     // Set nickname
     try {
-        if (guildSettings.changeNicknameToRobloxName) {
-            await member.setNickname(existingUserData.username);
+        switch (guildSettings.nicknameType) {
+            case "Username":
+                await member.setNickname(existingUserData.username);
+
+                break;
+            case "Display Name":
+                const robloxData = await guardsman.roblox.getPlayerInfo(Number(existingUserData.roblox_id));
+                await member.setNickname(robloxData.displayName || existingUserData.username);
+
+                break;
         }
     } catch (error) {
         errors.push(`Failed to set member nickname: ${error}`);

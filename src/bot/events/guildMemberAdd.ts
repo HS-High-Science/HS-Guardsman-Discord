@@ -2,7 +2,7 @@ import { Guardsman } from "index";
 import { updateUser } from "../util/user.js"
 import { addInfoToString } from "../util/string.js";
 import { GuildMember, TextChannel } from "discord.js";
-import { getSettings } from "../util/guildSettings.js";
+import { getSettings } from "../util/guild/guildSettings.js";
 import { createCanvas, loadImage, GlobalFonts } from "@napi-rs/canvas";
 
 export default async (guardsman: Guardsman, member: GuildMember) => {
