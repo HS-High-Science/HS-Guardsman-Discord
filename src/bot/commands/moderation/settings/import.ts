@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, Colors, EmbedBuilder, PermissionFlagsBits, ApplicationCommandOptionBase, SlashCommandAttachmentOption } from "discord.js";
-import { defaultSettings } from "../../../util/guildSettings.js";
+import { defaultSettings } from "../../../util/guild/guildSettings.js";
 import { Guardsman } from "index";
 import axios from "axios";
 

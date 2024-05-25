@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, Colors, EmbedBuilder, PermissionFlagsBits } from "discord.js";
-import { getSettings } from "../../../util/guildSettings.js";
+import { getSettings } from "../../../util/guild/guildSettings.js";
 import { Guardsman } from "index";
 
 export default class ExportSettingsGetCommand implements ICommand {
