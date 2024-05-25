@@ -1,7 +1,7 @@
 import { Guardsman } from "index";
 import { updateUser } from "../util/user.js";
 import { Colors, EmbedBuilder } from "discord.js";
-import { getSettings } from "../util/guildSettings.js";
+import { getSettings } from "../util/guild/guildSettings.js";
 
 export default async (guardsman: Guardsman, discordId: string) => {
     const interaction = guardsman.bot.pendingVerificationInteractions[discordId];

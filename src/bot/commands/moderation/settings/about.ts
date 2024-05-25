@@ -1,17 +1,17 @@
-import { ChatInputCommandInteraction, Colors, EmbedBuilder, PermissionFlagsBits, SlashCommandStringOption, ApplicationCommandOptionBase, AutocompleteInteraction } from "discord.js";
+import { ChatInputCommandInteraction, Colors, EmbedBuilder, PermissionFlagsBits, AutocompleteInteraction, ApplicationCommandOptionBase, SlashCommandStringOption } from "discord.js";
+import { defaultSettings } from "../../../util/guild/guildSettings.js";
 import { Guardsman } from "index";
-import { getSettings, defaultSettings } from "../../../util/guild/guildSettings.js";
 
-export default class SettingsGetCommand implements ICommand {
-    name: Lowercase<string> = "get";
-    description: string = "Allows Guild managers to view guild settings.";
+export default class AboutSettingsGetCommand implements ICommand {
+    name: Lowercase<string> = "about";
+    description: string = "Allows Guild managers to learn about guild settings.";
     guardsman: Guardsman;
     defaultMemberPermissions = PermissionFlagsBits.ManageGuild;
 
     options: ApplicationCommandOptionBase[] = [
         new SlashCommandStringOption()
             .setName("setting")
-            .setDescription("Setting to view")
+            .setDescription("Setting to lean about")
             .setRequired(true)
             .setAutocomplete(true),
     ]
@@ -38,16 +38,16 @@ export default class SettingsGetCommand implements ICommand {
             return;
         }
 
-        const value = await getSettings(this.guardsman, interaction.guild).then(settings => settings[setting]);
-
-        const embed = new EmbedBuilder()
-            .setColor(Colors.Green)
-            .setTitle(`Guardsman Setting - ${setting}`)
-            .setDescription(`The value of the setting \`${setting}\` is \`${value}\`.`)
-            .setFooter({ text: "Guardsman Settings" })
-            .setTimestamp();
-
-        await interaction.reply({ embeds: [embed] });
+        await interaction.reply({
+            embeds: [
+                new EmbedBuilder()
+                    .setColor(Colors.Green)
+                    .setTitle(`Guardsman Setting - ${setting}`)
+                    .setDescription(defaultSettings[setting].about)
+                    .setFooter({ text: "Guardsman Settings" })
+                    .setTimestamp()
+            ]
+        });
     }
 
     async autocomplete(interaction: AutocompleteInteraction<"cached">): Promise<void> {

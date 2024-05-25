@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, Colors, EmbedBuilder, PermissionFlagsBits, SlashCommandMentionableOption, SlashCommandStringOption } from "discord.js";
-import { getSettings } from "../../util/guildSettings.js";
+import { getSettings } from "../../util/guild/guildSettings.js";
 import { addInfoToString } from "../../util/string.js";
 import { Guardsman } from "index";
 

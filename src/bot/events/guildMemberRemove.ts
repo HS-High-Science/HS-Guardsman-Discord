@@ -1,7 +1,7 @@
 import { Guardsman } from "index";
 import { addInfoToString } from "../util/string.js";
 import { GuildMember, TextChannel } from "discord.js";
-import { getSettings } from "../util/guildSettings.js";
+import { getSettings } from "../util/guild/guildSettings.js";
 
 export default async (guardsman: Guardsman, member: GuildMember) => {
     const guild = member.guild;

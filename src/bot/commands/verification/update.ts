@@ -1,7 +1,7 @@
 import { ChatInputCommandInteraction, Colors, EmbedBuilder } from "discord.js";
 import { Guardsman } from "index";
 import { updateUser } from "../../util/user.js"
-import { getSettings } from "../../util/guildSettings.js";
+import { getSettings } from "../../util/guild/guildSettings.js";
 
 export default class UpdateCommand implements ICommand {
     name: Lowercase<string> = "update";
