@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, Colors, EmbedBuilder, PermissionFlagsBits, SlashCommandStringOption, ApplicationCommandOptionBase, AutocompleteInteraction } from "discord.js";
-import { updateSetting, defaultSettings } from "../../../util/guildSettings.js";
+import { updateSetting, defaultSettings } from "../../../util/guild/guildSettings.js";
 import { Guardsman } from "index";
 
 async function invalidValueTemplate(interaction: ChatInputCommandInteraction<"cached">, type: string, value: string) {
@@ -13,6 +13,34 @@ async function invalidValueTemplate(interaction: ChatInputCommandInteraction<"ca
                 .setTimestamp()
         ]
     })
+}
+
+async function cleanValue(setting: keyof typeof defaultSettings, value: any, interaction: ChatInputCommandInteraction<"cached">) {
+    switch (typeof defaultSettings[setting].default) {
+        case "string":
+            if (typeof value !== "string") {
+                await invalidValueTemplate(interaction, typeof defaultSettings[setting].default, value);
+                return;
+            }
+
+            return value;
+        case "boolean":
+            if (value.toLowerCase() !== "true" && value.toLowerCase() !== "false") {
+                await invalidValueTemplate(interaction, typeof defaultSettings[setting].default, value);
+                return;
+            }
+
+            return value.toLowerCase() === "true" ? true : false;
+        case "number":
+            if (isNaN(Number(value))) {
+                await invalidValueTemplate(interaction, typeof defaultSettings[setting].default, value);
+                return;
+            }
+
+            return Number(value);
+        default:
+            return;
+    }
 }
 
 export default class SettingsUpdateCommand implements ICommand {
@@ -58,42 +86,29 @@ export default class SettingsUpdateCommand implements ICommand {
             return;
         }
 
-        let cleanedValue: string | number | boolean;
+        let cleanedValue: typeof defaultSettings[typeof setting]["default"] | undefined;
         if (value) {
-            switch (typeof defaultSettings[setting]) {
-                case "string":
-                    if (typeof value !== "string") {
-                        await invalidValueTemplate(interaction, typeof defaultSettings[setting], value);
-                        return;
-                    }
+            if ((defaultSettings[setting] as { options: string[] }).options) {
+                let stringOptions = []
 
-                    cleanedValue = value;
+                for (const option of (defaultSettings[setting] as { options: string[] }).options) {
+                    stringOptions.push(option.toString());
+                }
 
-                    break;
-                case "boolean":
-                    if (value.toLowerCase() !== "true" && value.toLowerCase() !== "false") {
-                        await invalidValueTemplate(interaction, typeof defaultSettings[setting], value);
-                        return;
-                    }
-
-                    cleanedValue = value.toLowerCase() === "true" ? true : false;
-
-                    break;
-                case "number":
-                    if (isNaN(Number(value))) {
-                        await invalidValueTemplate(interaction, typeof defaultSettings[setting], value);
-                        return;
-                    }
-
-                    cleanedValue = Number(value);
-
-                    break;
-                default:
+                if (!stringOptions.includes(value)) {
+                    await invalidValueTemplate(interaction, "object", value);
                     return;
+                }
+
+                cleanedValue = await cleanValue(setting, value, interaction);
+            } else {
+                cleanedValue = await cleanValue(setting, value, interaction);
             }
         } else {
-            cleanedValue = defaultSettings[setting];
+            cleanedValue = defaultSettings[setting].default;
         }
+
+        if (!cleanedValue) return;
 
         await updateSetting(this.guardsman, interaction.guild, setting, cleanedValue);
 
@@ -116,18 +131,24 @@ export default class SettingsUpdateCommand implements ICommand {
 
         switch (focusedValue.name) {
             case "setting":
-                choices = Object.keys(defaultSettings).filter(setting => setting.includes(setting));
+                choices = Object.keys(defaultSettings).filter(settings => settings.toLowerCase().includes(setting.toLowerCase()));
 
                 break;
             case "value":
-                switch (typeof defaultSettings[setting]) {
+                if ((defaultSettings[setting] as { options: string[] }).options) {
+                    choices = (defaultSettings[setting] as { options: string[] }).options.map(option => option.toString());
+
+                    break;
+                }
+
+                switch (typeof defaultSettings[setting].default) {
                     case "boolean":
                         choices = ["true", "false"];
 
                         break;
                     default:
                         if (typeof value === "string") {
-                            if (value?.length === 0) return;
+                            if (value?.length === 0) break;
 
                             choices = [value.slice(0, 100)];
                         }

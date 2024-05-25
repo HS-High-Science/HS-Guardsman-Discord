@@ -1,7 +1,7 @@
 import { AxiosResponse } from "axios";
 import { ChatInputCommandInteraction, Colors, EmbedBuilder, SlashCommandIntegerOption, SlashCommandStringOption } from "discord.js";
 import { Guardsman } from "index";
-import { getSettings } from "../../util/guildSettings.js";
+import { getSettings } from "../../util/guild/guildSettings.js";
 import { addInfoToString } from "../../util/string.js";
 
 export default class GlobalBanCommand implements ICommand {
