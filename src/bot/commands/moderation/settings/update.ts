@@ -3,7 +3,7 @@ import { updateSetting, defaultSettings } from "../../../util/guild/guildSetting
 import { Guardsman } from "index";
 
 async function invalidValueTemplate(interaction: ChatInputCommandInteraction<"cached">, type: string, value: string) {
-    await interaction.reply({
+    await interaction.editReply({
         embeds: [
             new EmbedBuilder()
                 .setColor(Colors.Red)
@@ -68,11 +68,12 @@ export default class SettingsUpdateCommand implements ICommand {
     }
 
     async execute(interaction: ChatInputCommandInteraction<"cached">): Promise<void> {
+        await interaction.deferReply();
         const setting = interaction.options.getString("setting", true) as keyof typeof defaultSettings;
         const value = interaction.options.getString("value", false);
 
         if (defaultSettings[setting] === undefined) {
-            await interaction.reply({
+            await interaction.editReply({
                 embeds: [
                     new EmbedBuilder()
                         .setColor(Colors.Red)
@@ -119,7 +120,7 @@ export default class SettingsUpdateCommand implements ICommand {
             .setFooter({ text: "Guardsman Settings" })
             .setTimestamp();
 
-        await interaction.reply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed] });
     }
 
     async autocomplete(interaction: AutocompleteInteraction<"cached">): Promise<void> {

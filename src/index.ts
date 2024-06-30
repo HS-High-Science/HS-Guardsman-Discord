@@ -114,9 +114,13 @@ class GuardsmanObject {
     sendStartupPing = async () => {
         if (!this.bot.user) return;
 
+        console.log("sending startup ping")
+
         const clientData = await this.backend.post(`discord/bot/startup`, {
             client_id: this.bot.user.id
         });
+
+        console.log(clientData);
 
         this.clientGUID = clientData.data.client_guid;
     }
@@ -125,7 +129,7 @@ class GuardsmanObject {
         if (!this.bot.user) return;
         if (this.clientGUID === "") return this.sendStartupPing();
 
-        const clientData = await this.backend.patch(`discord/bot/checkin`, {
+        await this.backend.patch(`discord/bot/checkin`, {
             client_guid: this.clientGUID,
             client_id: this.bot.user.id
         });

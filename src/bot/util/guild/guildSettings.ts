@@ -15,7 +15,7 @@ function returnDefaultSettings(): GuildSettings {
     return defaultBuiltSettings as GuildSettings;
 }
 
-async function getSettings(guardsman: Guardsman, guild: Guild): Promise<GuildSettings> {
+export async function getSettings(guardsman: Guardsman, guild: Guild): Promise<GuildSettings> {
     const guildSettings = await guardsman.configuration.getGuildSettings(guild.id);
 
     const defaultBuiltSettings = returnDefaultSettings();
@@ -26,7 +26,7 @@ async function getSettings(guardsman: Guardsman, guild: Guild): Promise<GuildSet
     return { ...defaultBuiltSettings, ...JSON.parse(guildSettings.settings) };
 }
 
-async function updateSetting(guardsman: Guardsman, guild: Guild, name: keyof typeof defaultSettings, value: typeof defaultSettings[keyof typeof defaultSettings]["default"]): Promise<void> {
+export async function updateSetting(guardsman: Guardsman, guild: Guild, name: keyof typeof defaultSettings, value: typeof defaultSettings[keyof typeof defaultSettings]["default"]): Promise<void> {
     const guildSettings = await guardsman.configuration.getGuildSettings(guild.id);
 
     if (!guildSettings || !guildSettings.settings) {
@@ -46,8 +46,4 @@ async function updateSetting(guardsman: Guardsman, guild: Guild, name: keyof typ
     }
 }
 
-export {
-    getSettings,
-    updateSetting,
-    defaultSettings
-}
+export { defaultSettings };
