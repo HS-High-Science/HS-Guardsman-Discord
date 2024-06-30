@@ -3,7 +3,7 @@ import { Guardsman } from "../../index.js";
 import axios from "axios";
 import { getSettings } from "./guild/guildSettings.js";
 
-async function updateUser(guardsman: Guardsman, guild: Guild, member: GuildMember, existingUserData: IUser) {
+export async function updateUser(guardsman: Guardsman, guild: Guild, member: GuildMember, existingUserData: IUser) {
     const verificationBinds = await guardsman.database<IRoleBind>("verification_binds")
         .where("guild_id", guild.id);
 
@@ -35,24 +35,6 @@ async function updateUser(guardsman: Guardsman, guild: Guild, member: GuildMembe
             return { addedRoles, removedRoles, errors, extra: `Your roblox account is too young to join this guild! Minimum: \`${guildSettings.accountAge}\` days.` };
         }
     }
-
-    // see if guild has verified / unverified roles;
-    const verifiedRole = guild.roles.cache.find(role => role.name.includes("Verified") && !role.name.includes("Unverified"));
-    const unverifiedRole = guild.roles.cache.find(role => role.name.includes("Unverified"));
-
-    if (verifiedRole) allowedRoles.push({
-        id: -1,
-        guild_id: guild.id,
-        role_id: verifiedRole.id,
-        role_data: ""
-    });
-
-    if (unverifiedRole) removedRoles.push({
-        id: -1,
-        guild_id: guild.id,
-        role_id: unverifiedRole.id,
-        role_data: ""
-    });
 
     // parse allowed roles
     for (const verificationBind of verificationBinds) {
@@ -220,8 +202,4 @@ async function updateUser(guardsman: Guardsman, guild: Guild, member: GuildMembe
     }
 
     return { addedRoles, removedRoles, errors };
-}
-
-export {
-    updateUser
 }

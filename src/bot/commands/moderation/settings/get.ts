@@ -21,10 +21,11 @@ export default class SettingsGetCommand implements ICommand {
     }
 
     async execute(interaction: ChatInputCommandInteraction<"cached">): Promise<void> {
+        await interaction.deferReply();
         const setting = interaction.options.getString("setting", true) as keyof typeof defaultSettings;
 
         if (defaultSettings[setting] === undefined) {
-            await interaction.reply({
+            await interaction.editReply({
                 embeds: [
                     new EmbedBuilder()
                         .setColor(Colors.Red)
@@ -47,7 +48,7 @@ export default class SettingsGetCommand implements ICommand {
             .setFooter({ text: "Guardsman Settings" })
             .setTimestamp();
 
-        await interaction.reply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed] });
     }
 
     async autocomplete(interaction: AutocompleteInteraction<"cached">): Promise<void> {
