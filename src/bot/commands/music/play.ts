@@ -34,19 +34,6 @@ export default class PlayCommand implements ICommand {
 
         const queue = this.guardsman.bot.musicController.queues.create(interaction.guild);
         if (!queue.connection) {
-            if (interaction.member.voice.channel.id === '1203295311032881183' || '1206917090783797289' || '1230163577340428288') {
-                await interaction.editReply({
-                    embeds: [
-                        new EmbedBuilder()
-                            .setTitle("Guardsman Music")
-                            .setDescription("You cannot connect to an HSPS duty channel!")
-                            .setColor(Colors.Red)
-                            .setFooter({ text: "Guardsman Music" })
-                            .setTimestamp()
-                    ]
-                })
-                return;
-            }
             await queue.connect(interaction.member.voice.channel);
         }
 
