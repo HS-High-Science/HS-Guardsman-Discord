@@ -68,7 +68,9 @@ export default class SettingsUpdateCommand implements ICommand {
     }
 
     async execute(interaction: ChatInputCommandInteraction<"cached">): Promise<void> {
-        await interaction.deferReply();
+        try {
+            console.log('checkpoint 1');
+            await interaction.deferReply();
         const setting = interaction.options.getString("setting", true) as keyof typeof defaultSettings;
         const value = interaction.options.getString("value", false);
 
@@ -86,7 +88,7 @@ export default class SettingsUpdateCommand implements ICommand {
 
             return;
         }
-
+        console.log('checkpoint 2');
         let cleanedValue: typeof defaultSettings[typeof setting]["default"] | undefined;
         if (value) {
             if ((defaultSettings[setting] as { options: string[] }).options) {
@@ -108,11 +110,11 @@ export default class SettingsUpdateCommand implements ICommand {
         } else {
             cleanedValue = defaultSettings[setting].default;
         }
-
+        console.log('checkpoint 3');
         if (!cleanedValue) return;
-
+        console.log('checkpoint 4');
         await updateSetting(this.guardsman, interaction.guild, setting, cleanedValue);
-
+        console.log('checkpoint 5');
         const embed = new EmbedBuilder()
             .setColor(Colors.Green)
             .setTitle(`Guardsman Setting - ${setting}`)
@@ -121,6 +123,10 @@ export default class SettingsUpdateCommand implements ICommand {
             .setTimestamp();
 
         await interaction.editReply({ embeds: [embed] });
+        } catch (err) {
+            console.log(err)
+            await interaction.editReply('failed lol')
+        }
     }
 
     async autocomplete(interaction: AutocompleteInteraction<"cached">): Promise<void> {
