@@ -111,6 +111,7 @@ export default class SettingsUpdateCommand implements ICommand {
             cleanedValue = defaultSettings[setting].default;
         }
         console.log('checkpoint 3');
+        console.log('Cleaned value:', cleanedValue);
         if (!cleanedValue) return;
         console.log('checkpoint 4');
         await updateSetting(this.guardsman, interaction.guild, setting, cleanedValue);
