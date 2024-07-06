@@ -19,14 +19,8 @@ compile:
   artifacts:
     paths:
       - node_modules
-  only:
-    - master
-    - merge_requests
 
 testrun:
   stage: run
   script:
     - pnpm run ci --if-present
-  only:
-    - master
-    - merge_requests

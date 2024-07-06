@@ -33,9 +33,7 @@ export default class PlayCommand implements ICommand {
         const urlQuery = interaction.options.getString("url", true);
 
         const queue = this.guardsman.bot.musicController.queues.create(interaction.guild);
-        if (!queue.connection) {
-            await queue.connect(interaction.member.voice.channel);
-        }
+        if (!queue.connection) await queue.connect(interaction.member.voice.channel);
 
         const results = await this.guardsman.bot.musicController.search(urlQuery, {
             requestedBy: interaction.user,

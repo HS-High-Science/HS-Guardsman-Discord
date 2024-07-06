@@ -11,7 +11,7 @@ export default class AboutSettingsGetCommand implements ICommand {
     options: ApplicationCommandOptionBase[] = [
         new SlashCommandStringOption()
             .setName("setting")
-            .setDescription("Setting to lean about")
+            .setDescription("Setting to learn about")
             .setRequired(true)
             .setAutocomplete(true),
     ]

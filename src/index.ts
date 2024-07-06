@@ -60,8 +60,7 @@ class GuardsmanObject {
         this.log.info("Initializing Guardsman...");
         this.state = GuardsmanState.STARTING;
 
-        if (this.environment.TRELLO_APP_KEY && this.environment.TRELLO_TOKEN && !this.ci)
-        {
+        if (this.environment.TRELLO_APP_KEY && this.environment.TRELLO_TOKEN && !this.ci) {
             this.trello = new trello(this.environment.TRELLO_APP_KEY, this.environment.TRELLO_TOKEN);
             this.trello.getBoard(this.environment.TRELLO_BOARD_ID).then(async board => {
                 this.mainBoard = board;
@@ -114,13 +113,9 @@ class GuardsmanObject {
     sendStartupPing = async () => {
         if (!this.bot.user) return;
 
-        console.log("sending startup ping")
-
         const clientData = await this.backend.post(`discord/bot/startup`, {
             client_id: this.bot.user.id
         });
-
-        console.log(clientData);
 
         this.clientGUID = clientData.data.client_guid;
     }

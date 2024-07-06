@@ -109,7 +109,7 @@ export default class SettingsUpdateCommand implements ICommand {
             cleanedValue = defaultSettings[setting].default;
         }
 
-        if (!cleanedValue) return;
+        if (cleanedValue == undefined) return;
 
         await updateSetting(this.guardsman, interaction.guild, setting, cleanedValue);
 
