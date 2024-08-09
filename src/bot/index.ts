@@ -207,7 +207,7 @@ export default class Bot extends Client
             // unhook old events
             for (const event of Object.values(this.events.functions)) 
             {
-                this.removeListener(event.name, event.function);
+                this.removeAllListeners(event.name);
             }
 
             const events = await this.events.read();
