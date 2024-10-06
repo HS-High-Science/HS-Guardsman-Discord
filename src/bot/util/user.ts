@@ -146,42 +146,28 @@ export async function updateUser(guardsman: Guardsman, guild: Guild, member: Gui
     }
 
     // remove roles
-    for (const removedRole of removedRoles) {
-        const userRole = member.roles.resolve(removedRole.role_id);
-        if (userRole) {
-            try {
-                await member.roles.remove(removedRole.role_id);
-            }
-            catch (error: any) {
-                errors.push(error);
-            }
-        }
+    try {
+        await member.roles.remove(removedRoles.map(role => role.role_id));
+    }
+    catch (error: any) {
+        errors.push(error);
     }
 
     // add roles
-    for (const allowedRole of allowedRoles) {
-        const userRole = member.roles.resolve(allowedRole.role_id);
-        if (!userRole) {
-            const guildRole = guild.roles.resolve(allowedRole.role_id);
-            if (!guildRole) {
-                errors.push(`Failed to find role for bind ${allowedRole.id}`);
-                continue;
-            }
+    try {
+        await member.roles.add(allowedRoles.map(role => role.role_id));
+    }
+    catch (error: any) {
+        errors.push(error);
+    }
 
-            try {
-                await member.roles.add(guildRole);
-
-                addedRoles.push({
-                    id: -1,
-                    guild_id: guild.id,
-                    role_data: "",
-                    role_id: guildRole.id,
-                })
-            }
-            catch (error: any) {
-                errors.push(error);
-            }
-        }
+    for (const guildRole of allowedRoles) {
+        addedRoles.push({
+            id: -1,
+            guild_id: guild.id,
+            role_data: "",
+            role_id: String(guildRole.id),
+        })
     }
 
     // Set nickname
