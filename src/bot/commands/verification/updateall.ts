@@ -70,7 +70,7 @@ export default class UpdateAllCommand implements ICommand {
             })
 
             await new Promise((resolve) => {
-                setTimeout(resolve, (Math.floor(Math.random() * 5) * 1000) + 6_000)
+                setTimeout(resolve, (Math.floor(Math.random() * 5) * 1000) + 10_000)
             })
         }
 
