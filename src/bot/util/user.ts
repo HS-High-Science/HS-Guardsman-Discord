@@ -166,7 +166,7 @@ export async function updateUser(guardsman: Guardsman, guild: Guild, member: Gui
             id: -1,
             guild_id: guild.id,
             role_data: "",
-            role_id: String(guildRole.id),
+            role_id: guildRole.role_id,
         })
     }
 
