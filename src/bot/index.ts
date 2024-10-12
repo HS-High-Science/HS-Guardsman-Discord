@@ -1,9 +1,26 @@
+/**
+ *  Copyright (C) 2024 Bunker Bravo Interactive LLC
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+ */
+
 import { ChatInputCommandInteraction, Client, Collection, IntentsBitField, REST, RESTPostAPIApplicationCommandsJSONBody, Routes, SlashCommandBuilder, SlashCommandSubcommandBuilder } from "discord.js";
 import { Guardsman } from "../index.js";
 import { readdir, lstat } from "fs/promises";
 import * as url from 'url';
 import * as process from "process";
-import { Player, Track } from "discord-player";
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
@@ -17,13 +34,6 @@ export default class Bot extends Client {
     guardsman: Guardsman;
     REST: REST = new REST();
     apiCommands: SlashCommandBuilder[] = [];
-    musicController = new Player(this, {
-        ytdlOptions: {
-            quality: "highestaudio",
-            highWaterMark: 1 << 25
-        }
-    });
-    skipVotes: { [guildId: string]: { track: Track, channelId: string, voted: string[], needed: number } } = {};
 
     constructor(guardsman: Guardsman) {
         super({
@@ -51,8 +61,6 @@ export default class Bot extends Client {
         });
 
         this.guardsman = guardsman;
-
-        this.musicController.extractors.loadDefault();
 
         this.REST.setToken(this.guardsman.environment.DISCORD_BOT_TOKEN);
         this.commands.push().then(() => { this.guardsman.log.debug("Commands pushed.") });

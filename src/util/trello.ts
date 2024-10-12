@@ -1,3 +1,21 @@
+/**
+ *  Copyright (C) 2024 Bunker Bravo Interactive LLC
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+ */
+
 import axios from "axios";
 
 export class TrelloBoard implements Board {
@@ -15,8 +33,7 @@ export class TrelloBoard implements Board {
     shortUrl: string;
     url: string;
 
-    constructor(key: string, token: string, boardData: any)
-    {
+    constructor(key: string, token: string, boardData: any) {
         this.key = key;
         this.token = token;
         this.closed = boardData.closed;
@@ -32,8 +49,7 @@ export class TrelloBoard implements Board {
         this.url = boardData.url;
     }
 
-    async getUrl(baseUrl: string) : Promise<string>
-    {
+    async getUrl(baseUrl: string): Promise<string> {
         const key = this.key;
         const token = this.token;
         let credentials = `${baseUrl.includes("?") ? "&" : "?"}key=${key}&token=${token}`;
@@ -41,26 +57,22 @@ export class TrelloBoard implements Board {
         return `https://trello.com/1/${baseUrl}${credentials}`;
     }
 
-    async getList(name: string): Promise<List | undefined> 
-    {
+    async getList(name: string): Promise<List | undefined> {
         const lists = await this.getLists();
         return lists.find(list => list.name == name);
     }
 
-    async getListById(id: string): Promise<List | undefined> 
-    {
+    async getListById(id: string): Promise<List | undefined> {
         const lists = await this.getLists();
         return lists.find(list => list.id == id);
     }
 
-    async getLists(): Promise<List[]> 
-    {
+    async getLists(): Promise<List[]> {
         const response = await axios.get(await this.getUrl(`boards/${this.id}/lists`));
         const data = response.data;
         const lists = [];
 
-        for (const listData of data)
-        {
+        for (const listData of data) {
             const list = new TrelloList(this, listData);
             lists.push(list);
         }
@@ -68,15 +80,13 @@ export class TrelloBoard implements Board {
         return lists;
     }
 
-    async getListsAndCards(excludeLabels: boolean | undefined): Promise<ListWithCards[]> 
-    {
+    async getListsAndCards(excludeLabels: boolean | undefined): Promise<ListWithCards[]> {
         const cardFilter = `id,name,desc${excludeLabels == true ? "" : ",labels"}`
         const response = await axios.get(await this.getUrl(`boards/${this.id}/lists?filter=open&fields=id,name,cards&cards=open&card_fields=${cardFilter}`));
         return response.data;
     }
 
-    async makeList(name: string, fields: { [name: string]: any } | undefined): Promise<APIMakeCardData> 
-    {
+    async makeList(name: string, fields: { [name: string]: any } | undefined): Promise<APIMakeCardData> {
         const response = await axios.post(await this.getUrl(`boards/${this.id}/lists`), {
             name: name,
             ...fields
@@ -85,21 +95,18 @@ export class TrelloBoard implements Board {
         return response.data;
     }
 
-    async getLabels() : Promise<Label[]>
-    {
+    async getLabels(): Promise<Label[]> {
         const response = await axios.get(await this.getUrl(`boards/${this.id}/labels`));
         return response.data;
     }
 
-    async getLabel(name: string) : Promise<Label | undefined>
-    {
+    async getLabel(name: string): Promise<Label | undefined> {
         const labels = await this.getLabels();
         return labels.find(label => label.name == name);
     }
 }
 
-export class TrelloList implements List
-{
+export class TrelloList implements List {
     board: Board;
     closed: boolean;
     id: string;
@@ -110,8 +117,7 @@ export class TrelloList implements List
     status: any;
     subscribed: boolean;
 
-    constructor(board: Board, listData: any)
-    {
+    constructor(board: Board, listData: any) {
         this.board = board;
         this.closed = listData.closed;
         this.id = listData.id;
@@ -123,31 +129,26 @@ export class TrelloList implements List
         this.subscribed = listData.subscribed;
     }
 
-    async archiveAllCards(): Promise<boolean> 
-    {
+    async archiveAllCards(): Promise<boolean> {
         const response = await axios.post(await this.board.getUrl(`lists/${this.id}/archiveAllCards`));
         return Object.keys(response.data).length == 0;
     }
 
-    getBoard(): Board 
-    {
+    getBoard(): Board {
         return this.board;
     }
 
-    async getCard(name: string): Promise<Card | undefined> 
-    {
+    async getCard(name: string): Promise<Card | undefined> {
         const cards = await this.getCards();
         return cards.find(card => card.name == name);
     }
 
-    async getCards(): Promise<Card[]> 
-    {
+    async getCards(): Promise<Card[]> {
         const response = await axios.get(await this.board.getUrl(`lists/${this.id}/cards`));
         const cardData = response.data;
         const cards = [];
 
-        for (const data of cardData)
-        {
+        for (const data of cardData) {
             const card = new TrelloCard(this, data);
             cards.push(card);
         }
@@ -155,16 +156,14 @@ export class TrelloList implements List
         return cards;
     }
 
-    async setArchived(archived: boolean): Promise<APIArchiveListData> 
-    {
+    async setArchived(archived: boolean): Promise<APIArchiveListData> {
         const response = await axios.put(await this.board.getUrl(`lists/${this.id}/closed`), {
             value: archived
         })
         return response.data;
     }
 
-    async makeCard(name: string, description: string | undefined, fields: { [name: string]: any } | undefined): Promise<Card> 
-    {
+    async makeCard(name: string, description: string | undefined, fields: { [name: string]: any } | undefined): Promise<Card> {
         const response = await axios.post(await this.board.getUrl(`cards?idList=${this.id}`), {
             name: name,
             desc: description,
@@ -175,8 +174,7 @@ export class TrelloList implements List
     }
 }
 
-export class TrelloCard implements Card
-{
+export class TrelloCard implements Card {
     list: List
     badges: {
         attachmentsByType: { trello: { board: number; card: number } };
@@ -226,14 +224,13 @@ export class TrelloCard implements Card
     subscribed: boolean;
     url: string;
 
-    constructor(list: List, cardData: any)
-    {
+    constructor(list: List, cardData: any) {
         this.list = list;
         this.badges = cardData.badges;
         this.cardRole = cardData.cardRole;
         this.checkItemStates = cardData.checkItemStates;
         this.closed = cardData.closed;
-        this.cover =  cardData.cover;
+        this.cover = cardData.cover;
         this.dateLastActivity = cardData.dateLastActivity;
         this.desc = cardData.desc;
         this.descData = cardData.descData;
@@ -262,8 +259,7 @@ export class TrelloCard implements Card
         this.url = cardData.url;
     }
 
-    async addComment(text: string): Promise<Comment> 
-    {
+    async addComment(text: string): Promise<Comment> {
         const response = await axios.post(await this.list.board.getUrl(`cards/${this.id}/actions/comments`), {
             text
         });
@@ -271,8 +267,7 @@ export class TrelloCard implements Card
         return response.data;
     }
 
-    async addLabel(label: Label): Promise<boolean> 
-    {
+    async addLabel(label: Label): Promise<boolean> {
         const response = await axios.post(await this.list.board.getUrl(`cards/${this.id}/idLabels`), {
             value: label.id
         })
@@ -280,31 +275,26 @@ export class TrelloCard implements Card
         return typeof response.data != "string"
     }
 
-    async deleteCard(): Promise<boolean> 
-    {
+    async deleteCard(): Promise<boolean> {
         const response = await axios.delete(await this.list.board.getUrl(`cards/${this.id}`));
         return response.data;
     }
 
-    async getComments(): Promise<Comment[]> 
-    {
+    async getComments(): Promise<Comment[]> {
         const response = await axios.get(await this.list.board.getUrl(`cards/${this.id}/actions?filter=commentCard`));
         return response.data;
     }
 
-    getList(): List 
-    {
+    getList(): List {
         return this.list;
     }
 
-    async removeLabel(label: Label): Promise<boolean> 
-    {
+    async removeLabel(label: Label): Promise<boolean> {
         const response = await axios.delete(await this.list.board.getUrl(`cards/${this.id}/idLabels/${label.id}`));
         return response.data._value == null;
     }
 
-    async setArchived(archived: boolean): Promise<APIArchiveListData> 
-    {
+    async setArchived(archived: boolean): Promise<APIArchiveListData> {
         const response = await axios.put(await this.list.board.getUrl(`lists/${this.id}/closed`), {
             value: archived
         })
@@ -315,14 +305,12 @@ export class TrelloCard implements Card
 export default class TrelloApi {
     private key: string = "";
     private token: string = "";
-    constructor(appKey: string, token: string)
-    {
+    constructor(appKey: string, token: string) {
         this.key = appKey;
         this.token = token;
     }
 
-    getUrl = async(baseUrl: string) : Promise<string> =>
-    {
+    getUrl = async (baseUrl: string): Promise<string> => {
         const key = this.key;
         const token = this.token;
         let credentials = `${baseUrl.includes("?") ? "&" : "?"}key=${key}&token=${token}`;
@@ -330,8 +318,7 @@ export default class TrelloApi {
         return `https://trello.com/1/${baseUrl}${credentials}`;
     }
 
-    getBoard = async (boardId: string) : Promise<Board> => 
-    {
+    getBoard = async (boardId: string): Promise<Board> => {
         const boardData = await axios.get(await this.getUrl(`boards/${boardId}`));
         return new TrelloBoard(this.key, this.token, boardData.data);
     }
