@@ -1,6 +1,23 @@
+/**
+ *  Copyright (C) 2024 Bunker Bravo Interactive LLC
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+ */
+
 // Boards
-declare interface Board
-{
+declare interface Board {
     id: string
     name: string
     desc: string
@@ -23,8 +40,7 @@ declare interface Board
     makeList: (name: string, fields?: { [name: string]: any }) => Promise<APIMakeCardData>
 }
 
-declare interface Prefs
-{
+declare interface Prefs {
     permissionLevel: "private" | "public"
     hideVotes: boolean
     voting: "disabled" | "enabled"
@@ -52,22 +68,19 @@ declare interface Prefs
     canInvite: boolean
 }
 
-declare interface SwitcherView
-{
+declare interface SwitcherView {
     viewType: string
     enabled: boolean
 }
 
-declare interface ScaledBackgroundImage
-{
+declare interface ScaledBackgroundImage {
     width: number
     height: number
     url: string
 }
 
 // Lists
-declare interface List
-{
+declare interface List {
     board: Board
     id: string
     name: string
@@ -83,27 +96,24 @@ declare interface List
     getCard: (name: string) => Promise<Card | undefined>
     archiveAllCards: () => Promise<boolean>
     setArchived: (archived: boolean) => Promise<APIArchiveListData>
-    makeCard: (name: string, description?: string, fields?: { [name: string]: any}) => Promise<Card>
+    makeCard: (name: string, description?: string, fields?: { [name: string]: any }) => Promise<Card>
 }
 
-declare interface ListWithCards
-{
+declare interface ListWithCards {
     id: string
     name: string
     cards: ListAPICard[]
 }
 
 // Cards
-declare interface ListAPICard
-{
+declare interface ListAPICard {
     id: string
     name: string
     desc: string
     labels: Label[]
 }
 
-declare interface APIMakeCardData
-{
+declare interface APIMakeCardData {
     id: string
     name: string
     closed: boolean
@@ -113,8 +123,7 @@ declare interface APIMakeCardData
     limits: { [any]: any }
 }
 
-declare interface APIArchiveListData
-{
+declare interface APIArchiveListData {
     id: string
     name: string
     closed: boolean
@@ -123,8 +132,7 @@ declare interface APIArchiveListData
     status?: any
 }
 
-declare interface Card
-{
+declare interface Card {
     id: string
     list: List
     badges: {
@@ -192,8 +200,7 @@ declare interface Card
     removeLabel: (label: Label) => Promise<boolean>
 }
 
-declare interface Label
-{
+declare interface Label {
     id: string
     idBoard: string
     name: string
@@ -201,8 +208,7 @@ declare interface Label
     uses: number
 }
 
-declare interface Cover
-{
+declare interface Cover {
     idAttachment: string
     color: any
     idUploadedBackground: any
@@ -211,8 +217,7 @@ declare interface Cover
     idPlugin: any
 }
 
-declare interface Comment
-{
+declare interface Comment {
     id: string
     idMemberCreator: string
     data: {
