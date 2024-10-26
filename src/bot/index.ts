@@ -1,9 +1,26 @@
+/**
+ *  Copyright (C) 2024 Bunker Bravo Interactive LLC
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+ */
+
 import { ChatInputCommandInteraction, Client, Collection, IntentsBitField, REST, RESTPostAPIApplicationCommandsJSONBody, Routes, SlashCommandBuilder, SlashCommandSubcommandBuilder } from "discord.js";
 import { Guardsman } from "../index.js";
 import { readdir, lstat } from "fs/promises";
 import * as url from 'url';
 import * as process from "process";
-import { Player, Track } from "discord-player";
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
@@ -13,21 +30,12 @@ interface IEventsObject {
     load: () => Promise<void>
 }
 
-export default class Bot extends Client
-{
+export default class Bot extends Client {
     guardsman: Guardsman;
     REST: REST = new REST();
     apiCommands: SlashCommandBuilder[] = [];
-    musicController = new Player(this, {
-        ytdlOptions: {
-            quality: "highestaudio",
-            highWaterMark: 1 << 25
-        }
-    });
-    skipVotes : { [guildId: string]: { track: Track, channelId: string, voted: string[], needed: number } } = {};
 
-    constructor(guardsman: Guardsman)
-    {
+    constructor(guardsman: Guardsman) {
         super({
             intents: [
                 IntentsBitField.Flags.AutoModerationConfiguration,
@@ -54,14 +62,11 @@ export default class Bot extends Client
 
         this.guardsman = guardsman;
 
-        this.musicController.extractors.loadDefault();
-
         this.REST.setToken(this.guardsman.environment.DISCORD_BOT_TOKEN);
         this.commands.push().then(() => { this.guardsman.log.debug("Commands pushed.") });
         this.events.load().then(() => { this.guardsman.log.debug("Events loaded.") });
 
-        if (!guardsman.ci)
-        {
+        if (!guardsman.ci) {
             this.login(this.guardsman.environment.DISCORD_BOT_TOKEN);
         }
     }
@@ -71,32 +76,27 @@ export default class Bot extends Client
     commands = {
         list: new Collection<string, Collection<string, ICommand>>(),
 
-        read: async (): Promise<Collection<string, Collection<string, ICommand>>> =>
-        {
+        read: async (): Promise<Collection<string, Collection<string, ICommand>>> => {
             const categoryDirs = await readdir(`${__dirname}/commands`);
             const commandList = new Collection<string, Collection<string, ICommand>>();
 
-            for (const categoryDir of categoryDirs)
-            {
+            for (const categoryDir of categoryDirs) {
                 const category = new Collection<string, ICommand>();
                 const commandFiles = await readdir(`${__dirname}/commands/${categoryDir}`);
 
-                for (const commandFile of commandFiles)
-                {
+                for (const commandFile of commandFiles) {
                     const commandFileStat = await lstat(`${__dirname}/commands/${categoryDir}/${commandFile}`);
                     const commandClass = (await import(`./commands/${categoryDir}/${commandFile}${commandFileStat.isDirectory() && "/index.js" || ""}?update=${Date.now()}`)).default;
                     const commandData: ICommand = new commandClass(this.guardsman);
-                    
-                    if (commandFileStat.isDirectory())
-                    {
-                        if (!commandData.subcommands)
-                        {
+
+                    if (commandFileStat.isDirectory()) {
+                        if (!commandData.subcommands) {
                             commandData.subcommands = [];
                         }
 
                         commandData.isIndexer = true;
                     }
-                    
+
                     category.set(commandData.name, commandData);
                 }
 
@@ -111,47 +111,40 @@ export default class Bot extends Client
             this.commands.list = commandsList;
 
             const parsedCommands: RESTPostAPIApplicationCommandsJSONBody[] = [];
-            
-            for (const categoryName of commandsList.keys())
-            {
+
+            for (const categoryName of commandsList.keys()) {
                 const category = commandsList.get(categoryName);
-                if (!category) 
-                {
+                if (!category) {
                     this.guardsman.log.error(`Category is null! ${categoryName}`)
                     continue;
                 }
 
-                for (const command of category.values())
-                {
+                for (const command of category.values()) {
                     const slashCommand = new SlashCommandBuilder();
 
                     slashCommand.setName(command.name);
                     slashCommand.setDescription(command.description);
                     slashCommand.setDefaultMemberPermissions(command.defaultMemberPermissions);
 
-                    for (const option of command.options || [])
-                    {
+                    for (const option of command.options || []) {
                         slashCommand.options.push(option);
                     }
 
-                    if (command.isIndexer)
-                    {
+                    if (command.isIndexer) {
                         const subCommandFiles = await readdir(`${__dirname}/commands/${categoryName}/${command.name}`);
 
-                        for (const subCommandFile of subCommandFiles)
-                        {
+                        for (const subCommandFile of subCommandFiles) {
                             if (subCommandFile.includes("index.")) continue;
 
                             const subCommandClass = (await import(`./commands/${categoryName}/${command.name}/${subCommandFile}?update=${Date.now()}`)).default;
                             const subCommandData: ICommand = new subCommandClass(this.guardsman);
 
                             const subCommand = new SlashCommandSubcommandBuilder();
-                            
+
                             subCommand.setName(subCommandData.name);
                             subCommand.setDescription(subCommandData.description);
-                            
-                            for (const option of subCommandData.options || []) 
-                            {
+
+                            for (const option of subCommandData.options || []) {
                                 subCommand.options.push(option);
                             }
 
@@ -167,8 +160,7 @@ export default class Bot extends Client
                 }
             }
 
-            if (this.guardsman.ci)
-            {
+            if (this.guardsman.ci) {
                 this.guardsman.log.info("Command push disabled in CI mode. Command parse successful.")
                 process.exit(0);
             }
@@ -184,13 +176,11 @@ export default class Bot extends Client
     events: IEventsObject = {
         functions: [],
 
-        read: async () => 
-        {
+        read: async () => {
             const eventFiles = await readdir(`${__dirname}/events`);
             const events: IEvent[] = []
 
-            for (const eventFile of eventFiles)
-            {
+            for (const eventFile of eventFiles) {
                 const eventFunction = (await import(`./events/${eventFile}?update=${Date.now()}`)).default;
 
                 events.push({
@@ -202,19 +192,16 @@ export default class Bot extends Client
             return events;
         },
 
-        load: async () =>
-        {
+        load: async () => {
             // unhook old events
-            for (const event of Object.values(this.events.functions)) 
-            {
-                this.removeAllListeners(event.name);
+            for (const event of Object.values(this.events.functions)) {
+                this.off(event.name, event.function);
             }
 
             const events = await this.events.read();
             this.events.functions = events;
 
-            for (const event of events)
-            {
+            for (const event of events) {
                 this.on(event.name, event.function);
             }
         }

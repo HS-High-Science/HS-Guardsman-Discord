@@ -1,3 +1,21 @@
+/**
+ *  Copyright (C) 2024 Bunker Bravo Interactive LLC
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+ */
+
 import { Guild, GuildMember } from "discord.js";
 import { Guardsman } from "../../index.js";
 import axios from "axios";
@@ -146,42 +164,28 @@ export async function updateUser(guardsman: Guardsman, guild: Guild, member: Gui
     }
 
     // remove roles
-    for (const removedRole of removedRoles) {
-        const userRole = member.roles.resolve(removedRole.role_id);
-        if (userRole) {
-            try {
-                await member.roles.remove(removedRole.role_id);
-            }
-            catch (error: any) {
-                errors.push(error);
-            }
-        }
+    try {
+        await member.roles.remove(removedRoles.map(role => role.role_id));
+    }
+    catch (error: any) {
+        errors.push(error);
     }
 
     // add roles
-    for (const allowedRole of allowedRoles) {
-        const userRole = member.roles.resolve(allowedRole.role_id);
-        if (!userRole) {
-            const guildRole = guild.roles.resolve(allowedRole.role_id);
-            if (!guildRole) {
-                errors.push(`Failed to find role for bind ${allowedRole.id}`);
-                continue;
-            }
+    try {
+        await member.roles.add(allowedRoles.map(role => role.role_id));
+    }
+    catch (error: any) {
+        errors.push(error);
+    }
 
-            try {
-                await member.roles.add(guildRole);
-
-                addedRoles.push({
-                    id: -1,
-                    guild_id: guild.id,
-                    role_data: "",
-                    role_id: guildRole.id,
-                })
-            }
-            catch (error: any) {
-                errors.push(error);
-            }
-        }
+    for (const guildRole of allowedRoles) {
+        addedRoles.push({
+            id: -1,
+            guild_id: guild.id,
+            role_data: "",
+            role_id: guildRole.role_id,
+        })
     }
 
     // Set nickname

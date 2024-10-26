@@ -1,8 +1,25 @@
-import { Guardsman } from "index";
-import {ChatInputCommandInteraction, SlashCommandStringOption} from "discord.js";
+/**
+ *  Copyright (C) 2024 Bunker Bravo Interactive LLC
 
-const cleanString = async (guardsman: Guardsman, string: string | Promise<string>) =>
-{
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+ */
+
+import { Guardsman } from "index";
+import { ChatInputCommandInteraction, SlashCommandStringOption } from "discord.js";
+
+const cleanString = async (guardsman: Guardsman, string: string | Promise<string>) => {
     string = await string;
 
     const environment = guardsman.environment;
@@ -14,8 +31,7 @@ const cleanString = async (guardsman: Guardsman, string: string | Promise<string
         environment.DB_PASSWORD
     ]
 
-    for (const value of BLOCKED_VALUES)
-    {
+    for (const value of BLOCKED_VALUES) {
         string = string.replace(value, "[Content Removed for Security Reasons.]")
     }
 
@@ -25,8 +41,7 @@ const cleanString = async (guardsman: Guardsman, string: string | Promise<string
     return string;
 }
 
-export default class EvalCommand implements ICommand
-{
+export default class EvalCommand implements ICommand {
     name: Lowercase<string> = "eval";
     description: string = "(DEVELOPER ONLY) Executes raw JavaScript.";
     guardsman: Guardsman;
@@ -39,16 +54,14 @@ export default class EvalCommand implements ICommand
             .setRequired(true)
     ]
 
-    constructor(guardsman: Guardsman)
-    {
+    constructor(guardsman: Guardsman) {
         this.guardsman = guardsman;
     }
 
     async execute(interaction: ChatInputCommandInteraction<"cached">): Promise<void> {
         const code = interaction.options.getString("code", true);
 
-        try
-        {
+        try {
             const evalReturn = eval(code);
             const cleanReturn = await cleanString(this.guardsman, evalReturn);
 
@@ -62,8 +75,7 @@ export default class EvalCommand implements ICommand
                 ]
             })
         }
-        catch (error: any)
-        {
+        catch (error: any) {
             await interaction.reply({
                 content: "Execution failed.",
                 files: [
