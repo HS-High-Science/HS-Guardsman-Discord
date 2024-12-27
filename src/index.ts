@@ -105,7 +105,7 @@ class GuardsmanObject {
         this.log.debug("Connecting to ROBLOX API...")
         this.roblox = Noblox;
         if (!this.ci) {
-            //    this.roblox.setCookie(this.environment.ROBLOX_COOKIE).then(_ => console.log);
+            this.roblox.setCookie(this.environment.ROBLOX_COOKIE).catch(_ => console.log("fart"));
         }
 
         this.log.debug("Hooking in to Sentry...")
